@@ -11,6 +11,6 @@ Steps taken to initialize cluster:
 10. export TALOSCONFIG="_out/talosconfig"
     talosctl config endpoint $CONTROL_PLANE_IP
     talosctl config node $CONTROL_PLANE_IP
-11. talosctl bootstrap
-12. talosctl kubeconfig .
+11. `talosctl bootstrap`
+12. `talosctl kubeconfig .` // get the kubeconfig
 
