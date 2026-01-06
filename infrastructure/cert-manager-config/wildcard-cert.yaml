@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: vacant-dev-wildcard
+  namespace: traefik
+spec:
+  secretName: vacant-dev-wildcard-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - "vacant.dev"
+    - "*.vacant.dev"
