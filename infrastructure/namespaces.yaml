@@ -1,19 +1,18 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: metallb
+  name: namespaces
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "0"
+    argocd.argoproj.io/sync-wave: "-1"
 spec:
   project: default
   source:
-    repoURL: https://metallb.github.io/metallb
-    chart: metallb
-    targetRevision: 0.15.3
+    repoURL: https://github.com/mmeinzer/homelab.git
+    targetRevision: main
+    path: infrastructure/namespaces
   destination:
     server: https://kubernetes.default.svc
-    namespace: metallb-system
   syncPolicy:
     automated:
       prune: true
