@@ -1,0 +1,17 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "argocd": {
+    "fileMatch": ["infrastructure/.+\\.yaml$", "argocd/.+\\.yaml$"]
+  },
+  "regexManagers": [
+    {
+      "fileMatch": ["bootstrap\\.sh$"],
+      "matchStrings": [
+        "raw\\.githubusercontent\\.com/argoproj/argo-cd/(?<currentValue>v[\\d.]+)/manifests/install\\.yaml"
+      ],
+      "depNameTemplate": "argoproj/argo-cd",
+      "datasourceTemplate": "github-releases"
+    }
+  ]
+}
