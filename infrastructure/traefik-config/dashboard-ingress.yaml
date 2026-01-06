@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: traefik-dashboard
+  namespace: traefik
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - traefik.vacant.dev
+  rules:
+    - host: traefik.vacant.dev
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: traefik-dashboard
+                port:
+                  number: 8080
