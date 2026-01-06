@@ -22,7 +22,7 @@ spec:
                 name: cloudflare-api-token
                 key: api-token
         sources:
-          - traefik-proxy
+          - ingress
         policy: sync
         registry: txt
         txtOwnerId: homelab
