@@ -1,16 +1,168 @@
-Steps taken to initialize cluster:
-1. Download iso from talos factory with QEMU tools as only addition
-2. Create talos-1 and talos-2 VMs, one on each proxmox node
-3. Assign their IPs as static in the router (10.12.14.170 and 10.12.14.171)
-4. `export CONTROL_PLANE_IP=10.12.14.170`
-5. `talosctl gen config talos-proxmox-cluster https://$CONTROL_PLANE_IP:6443 --output-dir _out --install-image factory.talos.dev/nocloud-installer/ce4c980550dd2ab1b17bbf2b08801c7eb59418eafe8f279833297925d67c7515:v1.12.0`
-6. Edited `controlplane.yaml` to uncomment `allowSchedulingOnControlPlanes: true`
-7. `talosctl apply-config --insecure --nodes $CONTROL_PLANE_IP --file _out/controlplane.yaml`
-8. `export WORKER_IP=10.12.14.171`
-9. `talosctl apply-config --insecure --nodes $WORKER_IP --file _out/worker.yaml`
-10. export TALOSCONFIG="_out/talosconfig"
-    talosctl config endpoint $CONTROL_PLANE_IP
-    talosctl config node $CONTROL_PLANE_IP
-11. `talosctl bootstrap`
-12. `talosctl kubeconfig .` // get the kubeconfig
+# Homelab
 
+GitOps-managed Kubernetes homelab running on Talos Linux.
+
+## Architecture
+
+```
+                    ┌─────────────────────────────────────────┐
+                    │              Cloudflare DNS             │
+                    │         *.vacant.dev → 10.12.14.200     │
+                    └─────────────────┬───────────────────────┘
+                                      │
+                    ┌─────────────────▼───────────────────────┐
+                    │          Traefik (LoadBalancer)         │
+                    │      TLS termination, routing           │
+                    └─────────────────┬───────────────────────┘
+                                      │
+        ┌─────────────────────────────┼─────────────────────────────┐
+        │                             │                             │
+        ▼                             ▼                             ▼
+   ┌─────────┐                 ┌─────────────┐               ┌───────────┐
+   │ ArgoCD  │                 │   (future)  │               │  (future) │
+   └─────────┘                 └─────────────┘               └───────────┘
+```
+
+**Core Components:**
+- **Talos Linux** - Immutable, minimal Kubernetes OS
+- **ArgoCD** - GitOps continuous delivery
+- **MetalLB** - Bare metal LoadBalancer
+- **Traefik** - Ingress controller
+- **cert-manager** - Automatic TLS certificates via Let's Encrypt
+- **Sealed Secrets** - Encrypted secrets in git
+
+## Cluster Initialization (Talos)
+
+These steps were used to initialize the Talos cluster on Proxmox:
+
+1. Download ISO from [Talos Factory](https://factory.talos.dev/) with QEMU guest tools
+2. Create `talos-1` and `talos-2` VMs, one on each Proxmox node
+3. Assign static IPs in router: `10.12.14.170` (control plane), `10.12.14.171` (worker)
+4. Generate cluster config:
+   ```bash
+   export CONTROL_PLANE_IP=10.12.14.170
+   talosctl gen config talos-proxmox-cluster https://$CONTROL_PLANE_IP:6443 \
+     --output-dir _out \
+     --install-image factory.talos.dev/nocloud-installer/ce4c980550dd2ab1b17bbf2b08801c7eb59418eafe8f279833297925d67c7515:v1.12.0
+   ```
+5. Edit `controlplane.yaml` to uncomment `allowSchedulingOnControlPlanes: true`
+6. Apply configs:
+   ```bash
+   talosctl apply-config --insecure --nodes $CONTROL_PLANE_IP --file _out/controlplane.yaml
+
+   export WORKER_IP=10.12.14.171
+   talosctl apply-config --insecure --nodes $WORKER_IP --file _out/worker.yaml
+   ```
+7. Configure talosctl and bootstrap:
+   ```bash
+   export TALOSCONFIG="_out/talosconfig"
+   talosctl config endpoint $CONTROL_PLANE_IP
+   talosctl config node $CONTROL_PLANE_IP
+   talosctl bootstrap
+   ```
+8. Get kubeconfig:
+   ```bash
+   talosctl kubeconfig .
+   ```
+
+## ArgoCD Bootstrap
+
+After the cluster is running, bootstrap ArgoCD and the app-of-apps:
+
+```bash
+./bootstrap.sh
+```
+
+This installs ArgoCD and applies the root application, which then syncs everything in `infrastructure/`.
+
+**Access ArgoCD UI:**
+```bash
+kubectl port-forward svc/argocd-server -n argocd 8080:443
+```
+
+**Get admin password:**
+```bash
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d && echo
+```
+
+## TLS & Ingress Setup
+
+TLS is handled automatically via cert-manager with Cloudflare DNS-01 challenge.
+
+**Prerequisites:**
+1. Create a Cloudflare API token with `Zone:DNS:Edit` permission
+2. Install `kubeseal` CLI locally
+
+**Create the sealed secret:**
+```bash
+kubectl create secret generic cloudflare-api-token \
+  --namespace=cert-manager \
+  --from-literal=api-token=YOUR_TOKEN \
+  --dry-run=client -o yaml | \
+  kubeseal --controller-name=sealed-secrets --controller-namespace=kube-system -o yaml \
+  > infrastructure/cert-manager-config/cloudflare-token-sealed.yaml
+```
+
+**DNS Configuration:**
+Create A records in Cloudflare pointing to the Traefik LoadBalancer IP:
+```bash
+# Get Traefik's external IP
+kubectl get svc -n traefik traefik -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
+```
+
+Then add DNS records:
+- `argocd.vacant.dev` → `<traefik-ip>`
+- `*.vacant.dev` → `<traefik-ip>` (optional wildcard)
+
+## Sync Waves
+
+ArgoCD applications are deployed in order using sync waves:
+
+| Wave | Application | Description |
+|------|-------------|-------------|
+| -1 | namespaces | Pre-create namespaces with required labels |
+| 0 | metallb | LoadBalancer controller |
+| 1 | metallb-config | IP address pool configuration |
+| 2 | traefik | Ingress controller |
+| 3 | sealed-secrets | Secret encryption controller |
+| 4 | cert-manager | TLS certificate management |
+| 5 | cert-manager-config | ClusterIssuer, certificates |
+| 6 | argocd-config | ArgoCD ingress route |
+
+## Adding New Applications
+
+1. Create a new Application manifest in `infrastructure/`:
+   ```yaml
+   apiVersion: argoproj.io/v1alpha1
+   kind: Application
+   metadata:
+     name: my-app
+     namespace: argocd
+     annotations:
+       argocd.argoproj.io/sync-wave: "10"
+   spec:
+     project: default
+     source:
+       repoURL: https://github.com/mmeinzer/homelab.git
+       targetRevision: main
+       path: apps/my-app
+     destination:
+       server: https://kubernetes.default.svc
+       namespace: my-app
+     syncPolicy:
+       automated:
+         prune: true
+         selfHeal: true
+   ```
+
+2. Add your app manifests to `apps/my-app/`
+
+3. Commit and push - ArgoCD will sync automatically
+
+## IP Allocations
+
+| Range | Purpose |
+|-------|---------|
+| 10.12.14.170 | Talos control plane |
+| 10.12.14.171 | Talos worker |
+| 10.12.14.200-210 | MetalLB LoadBalancer pool |
