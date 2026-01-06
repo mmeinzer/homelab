@@ -30,6 +30,7 @@ GitOps-managed Kubernetes homelab running on Talos Linux.
 - **Traefik** - Ingress controller
 - **cert-manager** - Automatic TLS certificates via Let's Encrypt
 - **Sealed Secrets** - Encrypted secrets in git
+- **external-dns** - Automatic DNS record management via Cloudflare
 
 ## Cluster Initialization (Talos)
 
@@ -75,6 +76,11 @@ After the cluster is running, bootstrap ArgoCD and the app-of-apps:
 
 This installs ArgoCD and applies the root application, which then syncs everything in `infrastructure/`.
 
+**After apps sync, restart argocd-server** (required for TLS termination via Traefik):
+```bash
+kubectl rollout restart deployment/argocd-server -n argocd
+```
+
 **Access ArgoCD UI:**
 ```bash
 kubectl port-forward svc/argocd-server -n argocd 8080:443
@@ -87,32 +93,32 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.pas
 
 ## TLS & Ingress Setup
 
-TLS is handled automatically via cert-manager with Cloudflare DNS-01 challenge.
+TLS is handled automatically via cert-manager with Cloudflare DNS-01 challenge. DNS records are created automatically by external-dns when IngressRoutes are added.
 
 **Prerequisites:**
 1. Create a Cloudflare API token with `Zone:DNS:Edit` permission
 2. Install `kubeseal` CLI locally
 
-**Create the sealed secret:**
+**Create sealed secrets** (one for cert-manager, one for external-dns):
 ```bash
+# For cert-manager (TLS certificates)
 kubectl create secret generic cloudflare-api-token \
   --namespace=cert-manager \
   --from-literal=api-token=YOUR_TOKEN \
   --dry-run=client -o yaml | \
   kubeseal --controller-name=sealed-secrets --controller-namespace=kube-system -o yaml \
   > infrastructure/cert-manager-config/cloudflare-token-sealed.yaml
+
+# For external-dns (DNS record management)
+kubectl create secret generic cloudflare-api-token \
+  --namespace=external-dns \
+  --from-literal=api-token=YOUR_TOKEN \
+  --dry-run=client -o yaml | \
+  kubeseal --controller-name=sealed-secrets --controller-namespace=kube-system -o yaml \
+  > infrastructure/external-dns-config/cloudflare-token-sealed.yaml
 ```
 
-**DNS Configuration:**
-Create A records in Cloudflare pointing to the Traefik LoadBalancer IP:
-```bash
-# Get Traefik's external IP
-kubectl get svc -n traefik traefik -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
-```
-
-Then add DNS records:
-- `argocd.vacant.dev` → `<traefik-ip>`
-- `*.vacant.dev` → `<traefik-ip>` (optional wildcard)
+**DNS is automatic:** When you create an IngressRoute with a host like `Host(\`myapp.vacant.dev\`)`, external-dns automatically creates the A record in Cloudflare pointing to Traefik's LoadBalancer IP.
 
 ## Sync Waves
 
@@ -126,7 +132,9 @@ ArgoCD applications are deployed in order using sync waves:
 | 2 | traefik | Ingress controller |
 | 3 | sealed-secrets | Secret encryption controller |
 | 4 | cert-manager | TLS certificate management |
+| 4 | external-dns-config | Cloudflare API token for DNS |
 | 5 | cert-manager-config | ClusterIssuer, certificates |
+| 5 | external-dns | Automatic DNS record management |
 | 6 | argocd-config | ArgoCD ingress route |
 
 ## Adding New Applications
