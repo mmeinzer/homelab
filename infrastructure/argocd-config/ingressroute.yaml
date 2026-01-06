@@ -3,6 +3,8 @@ kind: IngressRoute
 metadata:
   name: argocd
   namespace: argocd
+  annotations:
+    external-dns.alpha.kubernetes.io/target: 10.12.14.200
 spec:
   entryPoints:
     - websecure
