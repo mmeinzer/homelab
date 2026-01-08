@@ -10,7 +10,7 @@ spec:
   source:
     repoURL: https://traefik.github.io/charts
     chart: traefik
-    targetRevision: 38.0.1
+    targetRevision: 38.0.2
     helm:
       values: |
         service:
