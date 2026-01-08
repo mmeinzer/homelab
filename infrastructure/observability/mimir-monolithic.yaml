@@ -72,18 +72,6 @@ data:
     memberlist:
       join_members: []
 
-    # Ruler storage (disabled but configured)
-    ruler_storage:
-      backend: s3
-      s3:
-        bucket_name: mimir-homelab
-
-    # Alertmanager storage (disabled but configured)
-    alertmanager_storage:
-      backend: s3
-      s3:
-        bucket_name: mimir-homelab
-
 ---
 apiVersion: apps/v1
 kind: Deployment
