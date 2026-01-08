@@ -37,8 +37,23 @@ data:
       backend: s3
       s3:
         bucket_name: mimir-homelab
+      bucket_store_config:
+        bucket_index:
+          enabled: true
       tsdb:
         dir: /data/tsdb
+
+    # Ruler storage (not used, use local filesystem)
+    ruler_storage:
+      backend: filesystem
+      filesystem:
+        dir: /data/ruler
+
+    # Alertmanager storage (not used, use local filesystem)
+    alertmanager_storage:
+      backend: filesystem
+      filesystem:
+        dir: /data/alertmanager
 
     # Compactor configuration
     compactor:
