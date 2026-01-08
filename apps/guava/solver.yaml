@@ -13,6 +13,8 @@ spec:
       labels:
         app: guava-solver
     spec:
+      imagePullSecrets:
+        - name: ghcr-creds
       containers:
         - name: guava-solver
           image: ghcr.io/mmeinzer/guava-solver:latest

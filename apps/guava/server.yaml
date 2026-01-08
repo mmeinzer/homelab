@@ -13,6 +13,8 @@ spec:
       labels:
         app: guava-server
     spec:
+      imagePullSecrets:
+        - name: ghcr-creds
       containers:
         - name: guava-server
           image: ghcr.io/mmeinzer/guava:latest
