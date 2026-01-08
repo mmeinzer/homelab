@@ -1,0 +1,19 @@
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: guava
+  namespace: argocd
+spec:
+  namespace: argocd
+  commonUpdateSettings:
+    updateStrategy: latest
+    pullSecret: secret:argocd/ghcr-creds#username:password
+  writeBackConfig:
+    method: argocd
+  applicationRefs:
+    - namePattern: "guava"
+      images:
+        - alias: server
+          imageName: ghcr.io/mmeinzer/guava:latest
+        - alias: solver
+          imageName: ghcr.io/mmeinzer/guava-solver:latest
