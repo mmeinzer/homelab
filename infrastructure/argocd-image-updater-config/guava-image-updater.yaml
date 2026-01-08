@@ -6,8 +6,7 @@ metadata:
 spec:
   namespace: argocd
   commonUpdateSettings:
-    updateStrategy: latest
-    pullSecret: secret:argocd/ghcr-creds#username:password
+    updateStrategy: newest-build
   writeBackConfig:
     method: argocd
   applicationRefs:
@@ -15,5 +14,9 @@ spec:
       images:
         - alias: server
           imageName: ghcr.io/mmeinzer/guava:latest
+          commonUpdateSettings:
+            pullSecret: pullsecret:argocd/ghcr-pullsecret
         - alias: solver
           imageName: ghcr.io/mmeinzer/guava-solver:latest
+          commonUpdateSettings:
+            pullSecret: pullsecret:argocd/ghcr-pullsecret
