@@ -20,7 +20,7 @@ spec:
 
         # Admin credentials from SealedSecret
         admin:
-          existingSecret: grafana
+          existingSecret: grafana-admin
           userKey: admin-user
           passwordKey: admin-password
 
