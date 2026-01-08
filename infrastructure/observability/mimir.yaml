@@ -50,6 +50,9 @@ spec:
             ruler_storage:
               s3:
                 bucket_name: mimir-homelab
+            ingester:
+              ring:
+                replication_factor: 1
             limits:
               native_histograms_ingestion_enabled: true
               compactor_blocks_retention_period: 720h  # 30 days
@@ -88,8 +91,6 @@ spec:
               memory: 1Gi
           persistentVolume:
             enabled: false
-          extraArgs:
-            ingester.ring.replication-factor: "1"
 
         # Querier - queries ingesters and store-gateway
         querier:
