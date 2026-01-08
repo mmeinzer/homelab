@@ -18,13 +18,11 @@ spec:
         persistence:
           enabled: false
 
-        # Admin credentials
-        adminUser: admin
-        envValueFrom:
-          GF_SECURITY_ADMIN_PASSWORD:
-            secretKeyRef:
-              name: grafana-admin
-              key: admin-password
+        # Admin credentials from SealedSecret
+        admin:
+          existingSecret: grafana
+          userKey: admin-user
+          passwordKey: admin-password
 
         # Datasources provisioning
         datasources:
