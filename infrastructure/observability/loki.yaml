@@ -29,9 +29,12 @@ spec:
             retention_enabled: true
           storage:
             type: s3
+            bucketNames:
+              chunks: loki-homelab
+              ruler: loki-homelab
+              admin: loki-homelab
             s3:
               endpoint: afc0de0b67de79f311811d5c36e790bd.r2.cloudflarestorage.com
-              bucketnames: loki-homelab
               region: auto
               accessKeyId: ${ACCESS_KEY_ID}
               secretAccessKey: ${SECRET_ACCESS_KEY}
