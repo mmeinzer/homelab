@@ -49,7 +49,7 @@ spec:
               - name: Mimir
                 uid: mimir
                 type: prometheus
-                url: http://mimir-nginx.observability.svc/prometheus
+                url: http://mimir.observability.svc:8080/prometheus
                 isDefault: true
                 editable: false
               - name: Loki
