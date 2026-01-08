@@ -79,6 +79,14 @@ spec:
         minio:
           enabled: false
 
+        # Disable simple scalable components (required for SingleBinary mode)
+        read:
+          replicas: 0
+        write:
+          replicas: 0
+        backend:
+          replicas: 0
+
         # Disable chunksCache, resultsCache for simplicity
         chunksCache:
           enabled: false
