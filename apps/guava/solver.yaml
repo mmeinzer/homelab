@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: guava-solver
+  namespace: guava
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: guava-solver
+  template:
+    metadata:
+      labels:
+        app: guava-solver
+    spec:
+      containers:
+        - name: guava-solver
+          image: ghcr.io/mmeinzer/guava-solver:latest
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: guava-secrets
+                  key: database-url
+            - name: POLL_INTERVAL_SECONDS
+              value: "5"
+            - name: SOLVER_TIMEOUT_SECONDS
+              value: "300"

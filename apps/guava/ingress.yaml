@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: guava
+  namespace: guava
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - guava.vacant.dev
+  rules:
+    - host: guava.vacant.dev
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: guava-server
+                port:
+                  number: 80
