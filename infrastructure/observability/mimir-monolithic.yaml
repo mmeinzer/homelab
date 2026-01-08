@@ -37,9 +37,6 @@ data:
       backend: s3
       s3:
         bucket_name: mimir-homelab
-      bucket_store_config:
-        bucket_index:
-          enabled: true
       tsdb:
         dir: /data/tsdb
 
