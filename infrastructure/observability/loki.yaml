@@ -62,6 +62,12 @@ spec:
               memory: 512Mi
           persistence:
             enabled: false
+          extraVolumes:
+            - name: data
+              emptyDir: {}
+          extraVolumeMounts:
+            - name: data
+              mountPath: /var/loki
           extraEnv:
             - name: ACCESS_KEY_ID
               valueFrom:
