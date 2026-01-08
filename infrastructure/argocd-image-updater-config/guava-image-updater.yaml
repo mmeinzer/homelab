@@ -7,16 +7,14 @@ spec:
   namespace: argocd
   commonUpdateSettings:
     updateStrategy: newest-build
+    allowTags: "regexp:^.*$"
+    pullSecret: pullsecret:argocd/ghcr-pullsecret
   writeBackConfig:
     method: argocd
   applicationRefs:
     - namePattern: "guava"
       images:
         - alias: server
-          imageName: ghcr.io/mmeinzer/guava:latest
-          commonUpdateSettings:
-            pullSecret: pullsecret:argocd/ghcr-pullsecret
+          imageName: ghcr.io/mmeinzer/guava
         - alias: solver
-          imageName: ghcr.io/mmeinzer/guava-solver:latest
-          commonUpdateSettings:
-            pullSecret: pullsecret:argocd/ghcr-pullsecret
+          imageName: ghcr.io/mmeinzer/guava-solver
