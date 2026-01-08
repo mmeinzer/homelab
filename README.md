@@ -136,6 +136,7 @@ ArgoCD applications are deployed in order using sync waves:
 | 5 | cert-manager-config | ClusterIssuer, certificates |
 | 5 | external-dns | Automatic DNS record management |
 | 6 | argocd-config | ArgoCD ingress route |
+| 10 | observability | Metrics/logging stack (Mimir, Loki, Alloy, Grafana) |
 
 ## Adding New Applications
 
@@ -168,6 +169,42 @@ ArgoCD applications are deployed in order using sync waves:
 3. Commit and push - ArgoCD will sync automatically
 
 ## Applications
+
+### Observability Stack
+
+Metrics and logging with Grafana, Mimir (metrics), Loki (logs), and Alloy (collector). All data stored in Cloudflare R2.
+
+**Prerequisites:**
+1. Create Cloudflare R2 buckets: `mimir-homelab`, `loki-homelab`
+2. Create R2 API token with read/write access
+
+**Sealed Secrets (regenerate if values change):**
+
+| Secret | Namespace | Keys |
+|--------|-----------|------|
+| `r2-credentials` | observability | `access_key_id`, `secret_access_key` |
+| `grafana-admin` | observability | `admin-password` |
+
+```bash
+# R2 credentials for Mimir and Loki storage
+kubectl create secret generic r2-credentials \
+  --namespace=observability \
+  --from-literal=access_key_id=YOUR_R2_ACCESS_KEY \
+  --from-literal=secret_access_key=YOUR_R2_SECRET_KEY \
+  --dry-run=client -o yaml | \
+  kubeseal --controller-name=sealed-secrets --controller-namespace=kube-system -o yaml \
+  > infrastructure/observability/r2-credentials-sealed.yaml
+
+# Grafana admin password
+kubectl create secret generic grafana-admin \
+  --namespace=observability \
+  --from-literal=admin-password=YOUR_PASSWORD \
+  --dry-run=client -o yaml | \
+  kubeseal --controller-name=sealed-secrets --controller-namespace=kube-system -o yaml \
+  > infrastructure/observability/grafana-admin-sealed.yaml
+```
+
+**Access Grafana:** https://grafana.vacant.dev (admin / your password)
 
 ### Guava
 
