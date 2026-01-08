@@ -59,6 +59,8 @@ spec:
               memory: 256Mi
             limits:
               memory: 512Mi
+          persistence:
+            enabled: false
           extraEnv:
             - name: ACCESS_KEY_ID
               valueFrom:
