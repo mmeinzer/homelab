@@ -167,6 +167,39 @@ ArgoCD applications are deployed in order using sync waves:
 
 3. Commit and push - ArgoCD will sync automatically
 
+## Applications
+
+### Guava
+
+Rotation scheduling application. Requires external PostgreSQL database.
+
+**Sealed Secrets (regenerate if values change):**
+
+| Secret | Namespace | How to Create |
+|--------|-----------|---------------|
+| `guava-secrets` | guava | Database connection string |
+| `ghcr-creds` | guava | GitHub Container Registry pull credentials |
+
+```bash
+# Database connection
+kubectl create secret generic guava-secrets \
+  --namespace=guava \
+  --from-literal=database-url="postgres://user:pass@host:5432/guava?sslmode=disable" \
+  --dry-run=client -o yaml | \
+  kubeseal --controller-name=sealed-secrets --controller-namespace=kube-system -o yaml \
+  > apps/guava/secrets-sealed.yaml
+
+# GitHub Container Registry (requires PAT with read:packages scope)
+kubectl create secret docker-registry ghcr-creds \
+  --namespace=guava \
+  --docker-server=ghcr.io \
+  --docker-username=mmeinzer \
+  --docker-password=YOUR_GITHUB_PAT \
+  --dry-run=client -o yaml | \
+  kubeseal --controller-name=sealed-secrets --controller-namespace=kube-system -o yaml \
+  > apps/guava/ghcr-creds-sealed.yaml
+```
+
 ## IP Allocations
 
 | Range | Purpose |
