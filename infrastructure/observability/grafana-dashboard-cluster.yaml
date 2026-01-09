@@ -416,24 +416,9 @@ data:
           "fieldConfig": {
             "defaults": {
               "color": { "mode": "palette-classic" },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "bars",
-                "fillOpacity": 80,
-                "gradientMode": "none",
-                "hideFrom": { "legend": false, "tooltip": false, "viz": false },
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": { "type": "linear" },
-                "showPoints": "never",
-                "spanNulls": false,
-                "stacking": { "group": "A", "mode": "none" },
-                "thresholdsStyle": { "mode": "off" }
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [{ "color": "green", "value": null }]
               },
               "unit": "short"
             },
@@ -442,8 +427,13 @@ data:
           "gridPos": { "h": 8, "w": 12, "x": 0, "y": 23 },
           "id": 11,
           "options": {
-            "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": false },
-            "tooltip": { "mode": "single", "sort": "none" }
+            "displayMode": "basic",
+            "minVizHeight": 10,
+            "minVizWidth": 0,
+            "orientation": "horizontal",
+            "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+            "showUnfilled": true,
+            "valueMode": "color"
           },
           "targets": [
             {
@@ -454,41 +444,31 @@ data:
             }
           ],
           "title": "Top 10 CPU (pods)",
-          "type": "timeseries"
+          "type": "bargauge"
         },
         {
           "datasource": { "type": "prometheus", "uid": "mimir" },
           "fieldConfig": {
             "defaults": {
               "color": { "mode": "palette-classic" },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "bars",
-                "fillOpacity": 80,
-                "gradientMode": "none",
-                "hideFrom": { "legend": false, "tooltip": false, "viz": false },
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": { "type": "linear" },
-                "showPoints": "never",
-                "spanNulls": false,
-                "stacking": { "group": "A", "mode": "none" },
-                "thresholdsStyle": { "mode": "off" }
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [{ "color": "green", "value": null }]
               },
-              "unit": "bytes"
+              "unit": "decbytes"
             },
             "overrides": []
           },
           "gridPos": { "h": 8, "w": 12, "x": 12, "y": 23 },
           "id": 12,
           "options": {
-            "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": false },
-            "tooltip": { "mode": "single", "sort": "none" }
+            "displayMode": "basic",
+            "minVizHeight": 10,
+            "minVizWidth": 0,
+            "orientation": "horizontal",
+            "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+            "showUnfilled": true,
+            "valueMode": "color"
           },
           "targets": [
             {
@@ -499,7 +479,7 @@ data:
             }
           ],
           "title": "Top 10 Memory (pods)",
-          "type": "timeseries"
+          "type": "bargauge"
         }
       ],
       "preload": false,
