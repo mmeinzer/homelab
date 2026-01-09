@@ -38,12 +38,22 @@ spec:
                   endpoint: "0.0.0.0:4317"
                 http:
                   endpoint: "0.0.0.0:4318"
+          extraArgs:
+            - -config.expand-env=true
+          extraEnv:
+            - name: ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: r2-credentials
+                  key: access_key_id
+            - name: SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: r2-credentials
+                  key: secret_access_key
 
         # Single replica monolithic deployment
         replicas: 1
-
-        extraArgs:
-          - -config.expand-env=true
 
         podAnnotations:
           prometheus.io/scrape: "true"
@@ -66,18 +76,6 @@ spec:
         extraVolumeMounts:
           - name: data
             mountPath: /var/tempo
-
-        extraEnv:
-          - name: ACCESS_KEY_ID
-            valueFrom:
-              secretKeyRef:
-                name: r2-credentials
-                key: access_key_id
-          - name: SECRET_ACCESS_KEY
-            valueFrom:
-              secretKeyRef:
-                name: r2-credentials
-                key: secret_access_key
 
   destination:
     server: https://kubernetes.default.svc
