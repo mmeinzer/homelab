@@ -39,7 +39,8 @@ spec:
                   path: /var/lib/grafana/dashboards/default
 
         dashboardsConfigMaps:
-          default: grafana-dashboards
+          default: grafana-dashboard-guava
+          cluster: grafana-dashboard-cluster
 
         # Datasources provisioning
         datasources:
