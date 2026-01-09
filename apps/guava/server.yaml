@@ -24,11 +24,12 @@ spec:
           image: ghcr.io/mmeinzer/guava:latest
           securityContext:
             allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1000
             capabilities:
               drop: ["ALL"]
             seccompProfile:
               type: RuntimeDefault
-            # TODO: fix Dockerfile to run as non-root, then add runAsNonRoot: true
           resources:
             requests:
               cpu: "50m"
