@@ -124,25 +124,8 @@ data:
           "targets": [
             {
               "datasource": { "type": "tempo", "uid": "tempo" },
-              "queryType": "traceqlSearch",
-              "filters": [
-                {
-                  "id": "service-name",
-                  "tag": "service.name",
-                  "operator": "=",
-                  "scope": "resource",
-                  "value": ["guava-api"],
-                  "valueType": "string"
-                },
-                {
-                  "id": "rpc-service",
-                  "tag": "rpc.service",
-                  "operator": "~",
-                  "scope": "span",
-                  "value": [".*RotationSchedule.*"],
-                  "valueType": "string"
-                }
-              ],
+              "queryType": "traceql",
+              "query": "{resource.service.name=\"guava-api\" && span.rpc.service=~\".*RotationSchedule.*\"}",
               "limit": 20,
               "refId": "A"
             }
