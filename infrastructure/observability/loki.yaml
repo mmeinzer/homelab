@@ -54,6 +54,9 @@ spec:
           replicas: 1
           extraArgs:
             - -config.expand-env=true
+          podAnnotations:
+            prometheus.io/scrape: "true"
+            prometheus.io/port: "3100"
           resources:
             requests:
               cpu: 100m

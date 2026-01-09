@@ -55,7 +55,7 @@ data:
           },
           "targets": [
             {
-              "expr": "up{job=\"mimir\"}",
+              "expr": "up{pod=~\"mimir.*\"}",
               "legendFormat": "__auto",
               "refId": "A"
             }
@@ -175,7 +175,7 @@ data:
           },
           "targets": [
             {
-              "expr": "up{job=~\"loki.*\"}",
+              "expr": "up{pod=~\"loki-\\d+\"}",
               "legendFormat": "__auto",
               "refId": "A"
             }
