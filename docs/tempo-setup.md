@@ -44,7 +44,13 @@ Tempo provides distributed tracing capabilities, completing the LGTM stack (Loki
 Alloy acts as a trace collector, adding Kubernetes metadata before forwarding to Tempo:
 
 - **OTLP Receiver**: Accepts traces on ports 4317 (gRPC) and 4318 (HTTP)
-- **Metadata Enrichment**: Adds namespace, pod, container labels
+- **K8s Attributes Processor**: Enriches traces with Kubernetes metadata:
+  - `k8s.namespace.name`
+  - `k8s.pod.name`
+  - `k8s.pod.uid`
+  - `k8s.deployment.name`
+  - `k8s.node.name`
+- **Batch Processor**: Batches traces for efficient forwarding (5s timeout, 8192 batch size)
 - **Forward**: Sends traces to Tempo via OTLP gRPC
 
 ### 3. Grafana Updates (`infrastructure/observability/grafana.yaml`)
@@ -61,6 +67,7 @@ Environment variables for OTEL configuration:
 | `OTEL_EXPORTER_OTLP_ENDPOINT` | `http://alloy.observability.svc:4318` | Alloy OTLP HTTP endpoint |
 | `OTEL_ENABLED` | `true` | Enable tracing |
 | `OTEL_SERVICE_NAME` | `guava-server` | Service name in traces |
+| `OTEL_RESOURCE_ATTRIBUTES` | `deployment.environment=homelab,service.namespace=guava` | Resource attributes for trace context |
 
 ## Configuration Details
 

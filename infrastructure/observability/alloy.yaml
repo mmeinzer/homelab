@@ -280,12 +280,36 @@ spec:
                   endpoint = "0.0.0.0:4318"
                 }
                 output {
+                  traces = [otelcol.processor.k8sattributes.default.input]
+                }
+              }
+
+              // Extracting Kubernetes metadata and adding to traces
+              otelcol.processor.k8sattributes "default" {
+                extract {
+                  metadata = [
+                    "k8s.namespace.name",
+                    "k8s.pod.name",
+                    "k8s.pod.uid",
+                    "k8s.deployment.name",
+                    "k8s.node.name",
+                  ]
+                }
+                pod_association {
+                  source {
+                    from = "connection"
+                  }
+                }
+                output {
                   traces = [otelcol.processor.batch.default.input]
                 }
               }
 
               // Batch processor for efficient trace forwarding
               otelcol.processor.batch "default" {
+                timeout = "5s"
+                send_batch_size = 8192
+                send_batch_max_size = 16384
                 output {
                   traces = [otelcol.exporter.otlp.tempo.input]
                 }
