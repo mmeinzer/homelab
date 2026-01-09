@@ -8,7 +8,7 @@ spec:
     - dnsName: app.guavascheduler.com
       recordType: CNAME
       targets:
-        - "1685052f-879b-463c-b735-16eb958bf29f.cfargotunnel.com"
+        - "b70d130a-1e01-4ab6-86e4-5043c61cfe0c.cfargotunnel.com"
       providerSpecific:
         - name: external-dns.alpha.kubernetes.io/cloudflare-proxied
           value: "true"
