@@ -64,7 +64,7 @@ Environment variables for OTEL configuration:
 
 | Variable | Value | Purpose |
 |----------|-------|---------|
-| `OTEL_EXPORTER_OTLP_ENDPOINT` | `http://alloy.observability.svc:4318` | Alloy OTLP HTTP endpoint |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | `alloy.observability.svc:4318` | Alloy OTLP HTTP endpoint (host:port only) |
 | `OTEL_ENABLED` | `true` | Enable tracing |
 | `OTEL_SERVICE_NAME` | `guava-server` | Service name in traces |
 | `OTEL_RESOURCE_ATTRIBUTES` | `deployment.environment=homelab,service.namespace=guava` | Resource attributes for trace context |
