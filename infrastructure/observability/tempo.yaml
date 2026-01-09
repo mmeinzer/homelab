@@ -39,7 +39,7 @@ spec:
                 http:
                   endpoint: "0.0.0.0:4318"
           extraArgs:
-            - -config.expand-env=true
+            config.expand-env: "true"
           extraEnv:
             - name: ACCESS_KEY_ID
               valueFrom:
