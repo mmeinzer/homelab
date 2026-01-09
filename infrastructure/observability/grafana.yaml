@@ -93,6 +93,20 @@ spec:
                 type: loki
                 url: http://loki.observability.svc:3100
                 editable: false
+              - name: Tempo
+                uid: tempo
+                type: tempo
+                url: http://tempo.observability.svc:3200
+                editable: false
+                jsonData:
+                  tracesToLogsV2:
+                    datasourceUid: loki
+                    spanStartTimeShift: '-1h'
+                    spanEndTimeShift: '1h'
+                    filterByTraceID: true
+                    filterBySpanID: false
+                  lokiSearch:
+                    datasourceUid: loki
 
         # Ingress - adjust domain as needed
         ingress:

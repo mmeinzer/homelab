@@ -1,0 +1,89 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: tempo
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: default
+  source:
+    repoURL: https://grafana.github.io/helm-charts
+    chart: tempo
+    targetRevision: 1.24.1
+    helm:
+      releaseName: tempo
+      valuesObject:
+        # Explicit name to ensure predictable service naming
+        fullnameOverride: tempo
+
+        tempo:
+          storage:
+            trace:
+              backend: s3
+              s3:
+                bucket: tempo-homelab
+                endpoint: afc0de0b67de79f311811d5c36e790bd.r2.cloudflarestorage.com
+                access_key: ${ACCESS_KEY_ID}
+                secret_key: ${SECRET_ACCESS_KEY}
+                forcepathstyle: true
+          retention: 360h  # 15 days
+          reportingEnabled: false
+          metricsGenerator:
+            enabled: false
+          receivers:
+            otlp:
+              protocols:
+                grpc:
+                  endpoint: "0.0.0.0:4317"
+                http:
+                  endpoint: "0.0.0.0:4318"
+
+        # Single replica monolithic deployment
+        replicas: 1
+
+        extraArgs:
+          - -config.expand-env=true
+
+        podAnnotations:
+          prometheus.io/scrape: "true"
+          prometheus.io/port: "3200"
+
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            memory: 512Mi
+
+        persistence:
+          enabled: false
+
+        extraVolumes:
+          - name: data
+            emptyDir: {}
+
+        extraVolumeMounts:
+          - name: data
+            mountPath: /var/tempo
+
+        extraEnv:
+          - name: ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: r2-credentials
+                key: access_key_id
+          - name: SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: r2-credentials
+                key: secret_access_key
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions: []

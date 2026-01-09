@@ -15,6 +15,16 @@ spec:
       releaseName: alloy
       valuesObject:
         alloy:
+          # Expose OTLP ports for trace ingestion
+          extraPorts:
+            - name: otlp-grpc
+              port: 4317
+              targetPort: 4317
+              protocol: TCP
+            - name: otlp-http
+              port: 4318
+              targetPort: 4318
+              protocol: TCP
           configMap:
             content: |
               // Discover Kubernetes pods
@@ -254,6 +264,64 @@ spec:
               loki.write "default" {
                 endpoint {
                   url = "http://loki.observability.svc:3100/loki/api/v1/push"
+                }
+              }
+
+              // ============================================
+              // TRACING: OTLP receiver and Tempo forwarding
+              // ============================================
+
+              // OTLP receiver for traces from instrumented applications
+              otelcol.receiver.otlp "default" {
+                grpc {
+                  endpoint = "0.0.0.0:4317"
+                }
+                http {
+                  endpoint = "0.0.0.0:4318"
+                }
+                output {
+                  traces = [otelcol.processor.k8sattributes.default.input]
+                }
+              }
+
+              // Extracting Kubernetes metadata and adding to traces
+              otelcol.processor.k8sattributes "default" {
+                extract {
+                  metadata = [
+                    "k8s.namespace.name",
+                    "k8s.pod.name",
+                    "k8s.pod.uid",
+                    "k8s.deployment.name",
+                    "k8s.node.name",
+                  ]
+                }
+                pod_association {
+                  source {
+                    from = "connection"
+                  }
+                }
+                output {
+                  traces = [otelcol.processor.batch.default.input]
+                }
+              }
+
+              // Batch processor for efficient trace forwarding
+              otelcol.processor.batch "default" {
+                timeout = "5s"
+                send_batch_size = 8192
+                send_batch_max_size = 16384
+                output {
+                  traces = [otelcol.exporter.otlp.tempo.input]
+                }
+              }
+
+              // Export traces to Tempo
+              otelcol.exporter.otlp "tempo" {
+                client {
+                  endpoint = "tempo.observability.svc:4317"
+                  tls {
+                    insecure = true
+                  }
                 }
               }
 
