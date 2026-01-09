@@ -5,22 +5,28 @@ GitOps-managed Kubernetes homelab running on Talos Linux.
 ## Architecture
 
 ```
-                    ┌─────────────────────────────────────────┐
-                    │              Cloudflare DNS             │
-                    │         *.vacant.dev → 10.12.14.200     │
-                    └─────────────────┬───────────────────────┘
-                                      │
-                    ┌─────────────────▼───────────────────────┐
-                    │          Traefik (LoadBalancer)         │
-                    │      TLS termination, routing           │
-                    └─────────────────┬───────────────────────┘
-                                      │
-        ┌─────────────────────────────┼─────────────────────────────┐
-        │                             │                             │
-        ▼                             ▼                             ▼
-   ┌─────────┐                 ┌─────────────┐               ┌───────────┐
-   │ ArgoCD  │                 │   (future)  │               │  (future) │
-   └─────────┘                 └─────────────┘               └───────────┘
+                                        ┌─────────────────────────────────────────┐
+                                        │              Cloudflare DNS             │
+                                        │         *.vacant.dev → 10.12.14.200     │
+                                        └─────────────────┬───────────────────────┘
+                                                          │
+                                        ┌─────────────────▼───────────────────────┐
+                                        │          Traefik (LoadBalancer)         │
+                                        │      TLS termination, routing           │
+                                        └─────────────────┬───────────────────────┘
+                                                          │
+                            ┌─────────────────────────────┼─────────────────────────────┐
+                            │                             │                             │
+                            ▼                             ▼                             ▼
+                       ┌─────────┐                 ┌─────────────┐               ┌───────────┐
+                       │ ArgoCD  │                 │  Grafana    │               │  (future) │
+                       └─────────┘                 └─────────────┘               └───────────┘
+
+
+    ┌───────────────────────────────┐         ┌───────────────────────────────┐
+    │  Cloudflare Tunnel (separate) │         │       cloudflared pod         │
+    │  app.guavascheduler.com       │ ──────► │       (outbound only)         │ ──────► Guava
+    └───────────────────────────────┘         └───────────────────────────────┘
 ```
 
 **Core Components:**
@@ -172,7 +178,7 @@ ArgoCD applications are deployed in order using sync waves:
 
 ### Observability Stack
 
-Metrics and logging with Grafana, Mimir (metrics), Loki (logs), and Alloy (collector). All data stored in Cloudflare R2.
+Metrics and logging with Grafana, Mimir (metrics, monolithic mode), Loki (logs), and Alloy (collector). All data stored in Cloudflare R2.
 
 **Prerequisites:**
 1. Create Cloudflare R2 buckets: `mimir-homelab`, `loki-homelab`
@@ -210,12 +216,15 @@ kubectl create secret generic grafana-admin \
 
 Rotation scheduling application. Requires external PostgreSQL database.
 
+**Access:** https://app.guavascheduler.com (exposed via Cloudflare Tunnel, not Traefik)
+
 **Sealed Secrets (regenerate if values change):**
 
 | Secret | Namespace | How to Create |
 |--------|-----------|---------------|
 | `guava-secrets` | guava | Database connection string |
 | `ghcr-creds` | guava | GitHub Container Registry pull credentials |
+| `cloudflared-token` | guava | Cloudflare Tunnel token |
 
 ```bash
 # Database connection
@@ -235,6 +244,14 @@ kubectl create secret docker-registry ghcr-creds \
   --dry-run=client -o yaml | \
   kubeseal --controller-name=sealed-secrets --controller-namespace=kube-system -o yaml \
   > apps/guava/ghcr-creds-sealed.yaml
+
+# Cloudflare Tunnel token (create tunnel in Cloudflare Zero Trust dashboard)
+kubectl create secret generic cloudflared-token \
+  --namespace=guava \
+  --from-literal=token=YOUR_CLOUDFLARE_TUNNEL_TOKEN \
+  --dry-run=client -o yaml | \
+  kubeseal --controller-name=sealed-secrets --controller-namespace=kube-system -o yaml \
+  > apps/guava/cloudflared-token-sealed.yaml
 ```
 
 ## IP Allocations
