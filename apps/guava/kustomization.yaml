@@ -7,8 +7,8 @@ resources:
   - secrets-sealed.yaml
   - ghcr-creds-sealed.yaml
   - cloudflared.yaml
+  - cloudflared-credentials-sealed.yaml
   - dns-endpoint.yaml
-  - cloudflared-token-sealed.yaml
 
 images:
   - name: ghcr.io/mmeinzer/guava

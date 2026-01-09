@@ -5,6 +5,8 @@ metadata:
   namespace: guava
 data:
   config.yaml: |
+    tunnel: b70d130a-1e01-4ab6-86e4-5043c61cfe0c
+    credentials-file: /etc/cloudflared/credentials/credentials.json
     metrics: 0.0.0.0:2000
     no-autoupdate: true
     ingress:
@@ -38,14 +40,6 @@ spec:
             - --config
             - /etc/cloudflared/config/config.yaml
             - run
-            - --token
-            - $(TUNNEL_TOKEN)
-          env:
-            - name: TUNNEL_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: cloudflared-tunnel-token
-                  key: token
           livenessProbe:
             httpGet:
               path: /ready
@@ -62,7 +56,13 @@ spec:
             - name: config
               mountPath: /etc/cloudflared/config
               readOnly: true
+            - name: credentials
+              mountPath: /etc/cloudflared/credentials
+              readOnly: true
       volumes:
         - name: config
           configMap:
             name: cloudflared-config
+        - name: credentials
+          secret:
+            secretName: cloudflared-credentials
