@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(kubectl get:*)",
+      "Bash(kubectl logs:*)",
+      "Bash(kubectl describe:*)",
+      "Bash(kubectl top:*)",
+      "Bash(kubectl annotate:*)",
+      "Bash(kubectl rollout:*)",
+      "Bash(kubectl port-forward:*)",
+      "Bash(kubectl exec:*)",
+      "Bash(helm repo:*)",
+      "Bash(helm show:*)",
+      "Bash(helm search:*)",
+      "Bash(curl:*)",
+      "Bash(jq:*)"
+    ],
+    "deny": [
+      "Bash(kubectl apply:*)",
+      "Bash(kubectl edit:*)",
+      "Bash(kubectl patch:*)",
+      "Bash(kubectl create:*)",
+      "Bash(kubectl replace:*)",
+      "Bash(kubectl delete:*)",
+      "Bash(kubectl set:*)",
+      "Bash(kubectl scale:*)",
+      "Bash(kubectl taint:*)",
+      "Bash(kubectl cordon:*)",
+      "Bash(kubectl drain:*)",
+      "Bash(helm install:*)",
+      "Bash(helm upgrade:*)",
+      "Bash(helm uninstall:*)",
+      "Bash(helm delete:*)"
+    ]
+  }
+}

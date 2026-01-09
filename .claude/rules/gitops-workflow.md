@@ -16,7 +16,7 @@ Never use `kubectl apply`, `kubectl edit`, or `kubectl patch` to modify resource
 |--------|-----|---------|
 | Read state | Yes | `kubectl get`, `kubectl logs`, `kubectl describe` |
 | Trigger sync | Yes | `kubectl annotate application ... argocd.argoproj.io/refresh=hard` |
-| Restart pods | Yes | `kubectl delete pod` (spec already in Git) |
+| Restart pods | Yes | `kubectl rollout restart deployment/<name>` |
 | Apply manifests | No | Never `kubectl apply -f` |
 | Edit resources | No | Never `kubectl edit` |
 
@@ -32,8 +32,8 @@ kubectl get application <app> -n argocd -o jsonpath='{.status.sync.revision}'
 # Force immediate sync
 kubectl annotate application <app> -n argocd argocd.argoproj.io/refresh=hard --overwrite
 
-# Restart pod to pick up new config
-kubectl delete pod <pod> -n <namespace>
+# Restart deployment to pick up new config
+kubectl rollout restart deployment/<name> -n <namespace>
 ```
 
 ## Debugging Failed Syncs

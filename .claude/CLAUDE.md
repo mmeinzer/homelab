@@ -60,3 +60,17 @@ When referencing datasources in Grafana dashboards:
 - Mimir (metrics): `uid: mimir`
 - Loki (logs): `uid: loki`
 - Tempo (traces): `uid: tempo`
+
+## Claude Code Rules
+
+See `.claude/rules/` for context-specific guidance:
+- `gitops-workflow.md` - GitOps practices and allowed kubectl operations
+- `dashboards.md` - Creating Grafana dashboards (auto-loaded for dashboard files)
+- `helm-values.md` - Helm chart configuration patterns (auto-loaded for infrastructure/)
+
+## Slash Commands
+
+- `/check-sync <app>` - Check ArgoCD sync status
+- `/debug-pod <ns> <pod>` - Debug pod with logs and events
+- `/list-apps` - List all ArgoCD applications
+- `/query-metrics [term]` - Query Mimir for available metrics
