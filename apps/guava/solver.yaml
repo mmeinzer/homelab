@@ -18,6 +18,13 @@ spec:
       containers:
         - name: guava-solver
           image: ghcr.io/mmeinzer/guava-solver:latest
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            capabilities:
+              drop: ["ALL"]
+            seccompProfile:
+              type: RuntimeDefault
           env:
             - name: DATABASE_URL
               valueFrom:
