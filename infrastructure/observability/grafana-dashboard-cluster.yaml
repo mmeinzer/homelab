@@ -608,7 +608,7 @@ data:
           },
           "targets": [
             {
-              "expr": "count(kube_deployment_status_replicas_unavailable > 0)",
+              "expr": "count(kube_deployment_status_replicas_unavailable > 0) or vector(0)",
               "legendFormat": "__auto",
               "refId": "A"
             }
@@ -645,7 +645,7 @@ data:
           },
           "targets": [
             {
-              "expr": "count(kube_daemonset_status_number_unavailable > 0)",
+              "expr": "count(kube_daemonset_status_number_unavailable > 0) or vector(0)",
               "legendFormat": "__auto",
               "refId": "A"
             }
