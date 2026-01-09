@@ -39,7 +39,7 @@ spec:
                   path: /var/lib/grafana/dashboards/default
               - name: cluster
                 orgId: 1
-                folder: "Cluster"
+                folder: ""
                 type: file
                 disableDeletion: false
                 editable: false
@@ -47,7 +47,7 @@ spec:
                   path: /var/lib/grafana/dashboards/cluster
               - name: namespace
                 orgId: 1
-                folder: "Namespace"
+                folder: ""
                 type: file
                 disableDeletion: false
                 editable: false
@@ -55,7 +55,7 @@ spec:
                   path: /var/lib/grafana/dashboards/namespace
               - name: observability
                 orgId: 1
-                folder: "Observability"
+                folder: ""
                 type: file
                 disableDeletion: false
                 editable: false
