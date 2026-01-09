@@ -45,6 +45,13 @@ spec:
                 secretKeyRef:
                   name: guava-secrets
                   key: database-url
+            # OpenTelemetry tracing configuration
+            - name: OTEL_ENABLED
+              value: "true"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://alloy.observability.svc:4318"
+            - name: OTEL_SERVICE_NAME
+              value: "guava-server"
           livenessProbe:
             httpGet:
               path: /health
