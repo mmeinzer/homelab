@@ -224,7 +224,7 @@ Rotation scheduling application. Requires external PostgreSQL database.
 |--------|-----------|---------------|
 | `guava-secrets` | guava | Database connection string |
 | `ghcr-creds` | guava | GitHub Container Registry pull credentials |
-| `cloudflared-token` | guava | Cloudflare Tunnel token |
+| `cloudflared-credentials` | guava | Cloudflare Tunnel credentials JSON |
 
 ```bash
 # Database connection
@@ -245,13 +245,13 @@ kubectl create secret docker-registry ghcr-creds \
   kubeseal --controller-name=sealed-secrets --controller-namespace=kube-system -o yaml \
   > apps/guava/ghcr-creds-sealed.yaml
 
-# Cloudflare Tunnel token (create tunnel in Cloudflare Zero Trust dashboard)
-kubectl create secret generic cloudflared-token \
+# Cloudflare Tunnel credentials (download credentials.json from Cloudflare Zero Trust dashboard)
+kubectl create secret generic cloudflared-credentials \
   --namespace=guava \
-  --from-literal=token=YOUR_CLOUDFLARE_TUNNEL_TOKEN \
+  --from-file=credentials.json=/path/to/credentials.json \
   --dry-run=client -o yaml | \
   kubeseal --controller-name=sealed-secrets --controller-namespace=kube-system -o yaml \
-  > apps/guava/cloudflared-token-sealed.yaml
+  > apps/guava/cloudflared-credentials-sealed.yaml
 ```
 
 ## IP Allocations
