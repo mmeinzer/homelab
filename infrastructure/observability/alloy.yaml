@@ -142,8 +142,10 @@ spec:
 
               // Scrape the blackbox exporter
               prometheus.scrape "blackbox" {
-                targets    = prometheus.exporter.blackbox.external.targets
-                forward_to = [prometheus.remote_write.mimir.receiver]
+                targets         = prometheus.exporter.blackbox.external.targets
+                job_name        = "blackbox-external"
+                scrape_interval = "30s"
+                forward_to      = [prometheus.remote_write.mimir.receiver]
               }
 
               // Discover pods for log collection
