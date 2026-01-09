@@ -66,6 +66,11 @@ apps/                    # Application deployments
 App (OTLP HTTP :4318) → Alloy (k8s metadata enrichment) → Tempo → R2 Storage
 ```
 
+## Documentation
+
+- [Creating Dashboards](docs/creating-dashboards.md) - How to discover metrics/traces and build Grafana dashboards
+- [Tempo Setup](docs/tempo-setup.md) - Distributed tracing architecture and configuration
+
 ## Common Tasks
 
 ### Add a new observability component
