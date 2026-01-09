@@ -92,7 +92,7 @@ data:
           },
           "targets": [
             {
-              "expr": "count(kube_node_status_condition{condition=\"Ready\", status=\"false\"})",
+              "expr": "sum(kube_node_status_condition{condition=\"Ready\", status=\"false\"})",
               "legendFormat": "__auto",
               "refId": "A"
             }
