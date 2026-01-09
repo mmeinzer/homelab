@@ -1,0 +1,71 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kube-state-metrics
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: default
+  source:
+    repoURL: https://prometheus-community.github.io/helm-charts
+    chart: kube-state-metrics
+    targetRevision: 5.27.0
+    helm:
+      releaseName: kube-state-metrics
+      valuesObject:
+        # Resource limits for homelab
+        resources:
+          requests:
+            cpu: 10m
+            memory: 64Mi
+          limits:
+            memory: 128Mi
+
+        # Service configuration for scraping
+        service:
+          port: 8080
+          annotations:
+            prometheus.io/scrape: "true"
+            prometheus.io/port: "8080"
+
+        # Prometheus scraping config
+        prometheus:
+          monitor:
+            enabled: false  # We use Alloy, not Prometheus Operator
+
+        # Collectors to enable (comprehensive set)
+        collectors:
+          - certificatesigningrequests
+          - configmaps
+          - cronjobs
+          - daemonsets
+          - deployments
+          - endpoints
+          - horizontalpodautoscalers
+          - ingresses
+          - jobs
+          - leases
+          - limitranges
+          - namespaces
+          - nodes
+          - persistentvolumeclaims
+          - persistentvolumes
+          - poddisruptionbudgets
+          - pods
+          - replicasets
+          - replicationcontrollers
+          - resourcequotas
+          - secrets
+          - services
+          - statefulsets
+          - storageclasses
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions: []

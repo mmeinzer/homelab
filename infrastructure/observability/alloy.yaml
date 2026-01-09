@@ -115,6 +115,76 @@ spec:
                 forward_to = [prometheus.remote_write.mimir.receiver]
               }
 
+              // Discover node-exporter endpoints
+              discovery.kubernetes "node_exporter" {
+                role = "endpoints"
+                namespaces {
+                  names = ["observability"]
+                }
+              }
+
+              // Relabel node-exporter targets
+              discovery.relabel "node_exporter" {
+                targets = discovery.kubernetes.node_exporter.targets
+
+                // Only keep node-exporter service endpoints
+                rule {
+                  source_labels = ["__meta_kubernetes_service_name"]
+                  regex         = "node-exporter-prometheus-node-exporter"
+                  action        = "keep"
+                }
+
+                // Add node label from endpoint node name
+                rule {
+                  source_labels = ["__meta_kubernetes_endpoint_node_name"]
+                  target_label  = "node"
+                }
+
+                rule {
+                  source_labels = ["__meta_kubernetes_namespace"]
+                  target_label  = "namespace"
+                }
+              }
+
+              // Scrape node-exporter metrics
+              prometheus.scrape "node_exporter" {
+                targets    = discovery.relabel.node_exporter.output
+                job_name   = "node-exporter"
+                forward_to = [prometheus.remote_write.mimir.receiver]
+              }
+
+              // Discover kube-state-metrics endpoints
+              discovery.kubernetes "kube_state_metrics" {
+                role = "endpoints"
+                namespaces {
+                  names = ["observability"]
+                }
+              }
+
+              // Relabel kube-state-metrics targets
+              discovery.relabel "kube_state_metrics" {
+                targets = discovery.kubernetes.kube_state_metrics.targets
+
+                // Only keep kube-state-metrics service endpoints
+                rule {
+                  source_labels = ["__meta_kubernetes_service_name"]
+                  regex         = "kube-state-metrics"
+                  action        = "keep"
+                }
+
+                rule {
+                  source_labels = ["__meta_kubernetes_namespace"]
+                  target_label  = "namespace"
+                }
+              }
+
+              // Scrape kube-state-metrics
+              prometheus.scrape "kube_state_metrics" {
+                targets    = discovery.relabel.kube_state_metrics.output
+                job_name   = "kube-state-metrics"
+                forward_to = [prometheus.remote_write.mimir.receiver]
+              }
+
               // Remote write to Mimir
               prometheus.remote_write "mimir" {
                 endpoint {
