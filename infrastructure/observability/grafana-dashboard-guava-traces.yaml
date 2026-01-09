@@ -40,40 +40,16 @@ data:
           "datasource": { "type": "tempo", "uid": "tempo" },
           "gridPos": { "h": 14, "w": 24, "x": 0, "y": 1 },
           "id": 1,
-          "options": {
-            "search": {
-              "datasource": { "type": "tempo", "uid": "tempo" },
-              "filters": [
-                {
-                  "id": "service-name",
-                  "tag": "service.name",
-                  "operator": "=",
-                  "scope": "resource",
-                  "value": ["guava-api"],
-                  "valueType": "string"
-                }
-              ]
-            }
-          },
           "targets": [
             {
               "datasource": { "type": "tempo", "uid": "tempo" },
-              "queryType": "traceqlSearch",
-              "filters": [
-                {
-                  "id": "service-name",
-                  "tag": "service.name",
-                  "operator": "=",
-                  "scope": "resource",
-                  "value": ["guava-api"],
-                  "valueType": "string"
-                }
-              ],
+              "queryType": "traceql",
+              "query": "{resource.service.name=\"guava-api\"}",
               "limit": 50,
               "refId": "A"
             }
           ],
-          "title": "Trace Search",
+          "title": "All Guava Traces",
           "type": "traces"
         },
         {
@@ -91,25 +67,8 @@ data:
           "targets": [
             {
               "datasource": { "type": "tempo", "uid": "tempo" },
-              "queryType": "traceqlSearch",
-              "filters": [
-                {
-                  "id": "service-name",
-                  "tag": "service.name",
-                  "operator": "=",
-                  "scope": "resource",
-                  "value": ["guava-api"],
-                  "valueType": "string"
-                },
-                {
-                  "id": "rpc-service",
-                  "tag": "rpc.service",
-                  "operator": "=",
-                  "scope": "span",
-                  "value": ["user.v1.UserService"],
-                  "valueType": "string"
-                }
-              ],
+              "queryType": "traceql",
+              "query": "{resource.service.name=\"guava-api\" && span.rpc.service=\"user.v1.UserService\"}",
               "limit": 20,
               "refId": "A"
             }
@@ -148,25 +107,8 @@ data:
           "targets": [
             {
               "datasource": { "type": "tempo", "uid": "tempo" },
-              "queryType": "traceqlSearch",
-              "filters": [
-                {
-                  "id": "service-name",
-                  "tag": "service.name",
-                  "operator": "=",
-                  "scope": "resource",
-                  "value": ["guava-api"],
-                  "valueType": "string"
-                },
-                {
-                  "id": "db-system",
-                  "tag": "db.system",
-                  "operator": "=",
-                  "scope": "span",
-                  "value": ["postgresql"],
-                  "valueType": "string"
-                }
-              ],
+              "queryType": "traceql",
+              "query": "{resource.service.name=\"guava-api\" && span.db.system=\"postgresql\"}",
               "limit": 30,
               "refId": "A"
             }
