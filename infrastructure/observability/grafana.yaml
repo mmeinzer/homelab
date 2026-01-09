@@ -37,6 +37,14 @@ spec:
                 editable: true
                 options:
                   path: /var/lib/grafana/dashboards/default
+              - name: cluster
+                orgId: 1
+                folder: "Cluster"
+                type: file
+                disableDeletion: false
+                editable: true
+                options:
+                  path: /var/lib/grafana/dashboards/cluster
 
         dashboardsConfigMaps:
           default: grafana-dashboard-guava
