@@ -43,14 +43,15 @@ data:
           "targets": [
             {
               "datasource": { "type": "tempo", "uid": "tempo" },
-              "queryType": "traceql",
+              "queryType": "traceqlSearch",
               "query": "{resource.service.name=\"guava-api\"}",
               "limit": 50,
+              "tableType": "traces",
               "refId": "A"
             }
           ],
           "title": "All Guava Traces",
-          "type": "traces"
+          "type": "table"
         },
         {
           "collapsed": false,
@@ -67,14 +68,15 @@ data:
           "targets": [
             {
               "datasource": { "type": "tempo", "uid": "tempo" },
-              "queryType": "traceql",
+              "queryType": "traceqlSearch",
               "query": "{resource.service.name=\"guava-api\" && span.rpc.service=\"user.v1.UserService\"}",
               "limit": 20,
+              "tableType": "traces",
               "refId": "A"
             }
           ],
           "title": "User Service Traces",
-          "type": "traces"
+          "type": "table"
         },
         {
           "datasource": { "type": "tempo", "uid": "tempo" },
@@ -83,14 +85,15 @@ data:
           "targets": [
             {
               "datasource": { "type": "tempo", "uid": "tempo" },
-              "queryType": "traceql",
+              "queryType": "traceqlSearch",
               "query": "{resource.service.name=\"guava-api\" && span.rpc.service=~\".*RotationSchedule.*\"}",
               "limit": 20,
+              "tableType": "traces",
               "refId": "A"
             }
           ],
           "title": "Rotation Schedule Service Traces",
-          "type": "traces"
+          "type": "table"
         },
         {
           "collapsed": false,
@@ -107,14 +110,15 @@ data:
           "targets": [
             {
               "datasource": { "type": "tempo", "uid": "tempo" },
-              "queryType": "traceql",
+              "queryType": "traceqlSearch",
               "query": "{resource.service.name=\"guava-api\" && span.db.system=\"postgresql\"}",
               "limit": 30,
+              "tableType": "traces",
               "refId": "A"
             }
           ],
           "title": "PostgreSQL Query Traces",
-          "type": "traces"
+          "type": "table"
         },
         {
           "collapsed": false,
@@ -131,14 +135,15 @@ data:
           "targets": [
             {
               "datasource": { "type": "tempo", "uid": "tempo" },
-              "queryType": "traceql",
+              "queryType": "traceqlSearch",
               "query": "{resource.service.name=\"guava-api\" && kind=server && duration > 100ms}",
               "limit": 20,
+              "tableType": "traces",
               "refId": "A"
             }
           ],
           "title": "Slow Traces (>100ms)",
-          "type": "traces"
+          "type": "table"
         },
         {
           "datasource": { "type": "tempo", "uid": "tempo" },
@@ -147,14 +152,15 @@ data:
           "targets": [
             {
               "datasource": { "type": "tempo", "uid": "tempo" },
-              "queryType": "traceql",
+              "queryType": "traceqlSearch",
               "query": "{resource.service.name=\"guava-api\" && status=error}",
               "limit": 20,
+              "tableType": "traces",
               "refId": "A"
             }
           ],
           "title": "Error Traces",
-          "type": "traces"
+          "type": "table"
         }
       ],
       "preload": false,
