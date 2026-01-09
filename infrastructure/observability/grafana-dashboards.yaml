@@ -539,6 +539,44 @@ data:
           "fieldConfig": {
             "defaults": {
               "color": { "mode": "thresholds" },
+              "decimals": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "green", "value": null },
+                  { "color": "yellow", "value": 180000000 },
+                  { "color": "red", "value": 230000000 }
+                ]
+              },
+              "unit": "decbytes"
+            },
+            "overrides": []
+          },
+          "gridPos": { "h": 4, "w": 3, "x": 4, "y": 19 },
+          "id": 13,
+          "options": {
+            "colorMode": "background",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+            "textMode": "value"
+          },
+          "targets": [
+            {
+              "expr": "sum(container_memory_working_set_bytes{namespace=\"guava\", container=\"guava-server\"})",
+              "legendFormat": "__auto",
+              "refId": "A"
+            }
+          ],
+          "title": "Memory",
+          "type": "stat"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "mimir" },
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "thresholds" },
               "decimals": 1,
               "thresholds": {
                 "mode": "absolute",
@@ -552,8 +590,8 @@ data:
             },
             "overrides": []
           },
-          "gridPos": { "h": 4, "w": 4, "x": 4, "y": 19 },
-          "id": 13,
+          "gridPos": { "h": 4, "w": 3, "x": 7, "y": 19 },
+          "id": 19,
           "options": {
             "colorMode": "background",
             "graphMode": "area",
@@ -564,12 +602,12 @@ data:
           },
           "targets": [
             {
-              "expr": "sum(container_memory_working_set_bytes{namespace=\"guava\", container=\"guava-server\"}) / sum(kube_pod_container_resource_limits{namespace=\"guava\", container=\"guava-server\", resource=\"memory\"}) * 100 OR sum(container_memory_working_set_bytes{namespace=\"guava\", container=\"guava-server\"}) / sum(container_spec_memory_limit_bytes{namespace=\"guava\", container=\"guava-server\"}) * 100",
+              "expr": "sum(container_memory_working_set_bytes{namespace=\"guava\", container=\"guava-server\"}) / sum(container_spec_memory_limit_bytes{namespace=\"guava\", container=\"guava-server\"}) * 100",
               "legendFormat": "__auto",
               "refId": "A"
             }
           ],
-          "title": "Memory Usage",
+          "title": "Memory %",
           "type": "stat"
         },
         {
@@ -585,7 +623,7 @@ data:
             },
             "overrides": []
           },
-          "gridPos": { "h": 4, "w": 4, "x": 8, "y": 19 },
+          "gridPos": { "h": 4, "w": 3, "x": 10, "y": 19 },
           "id": 14,
           "options": {
             "colorMode": "background",
@@ -621,7 +659,7 @@ data:
             },
             "overrides": []
           },
-          "gridPos": { "h": 4, "w": 4, "x": 12, "y": 19 },
+          "gridPos": { "h": 4, "w": 3, "x": 13, "y": 19 },
           "id": 15,
           "options": {
             "colorMode": "background",
