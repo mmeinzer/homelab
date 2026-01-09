@@ -175,7 +175,7 @@ data:
           },
           "targets": [
             {
-              "expr": "up{pod=~\"loki-\\d+\"}",
+              "expr": "up{pod=~\"loki-[0-9]+\"}",
               "legendFormat": "__auto",
               "refId": "A"
             }
