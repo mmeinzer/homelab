@@ -580,6 +580,137 @@ data:
         {
           "collapsed": false,
           "gridPos": { "h": 1, "w": 24, "x": 0, "y": 30 },
+          "id": 107,
+          "panels": [],
+          "title": "Memory Breakdown (Detailed)",
+          "type": "row"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "mimir" },
+          "description": "Shows how memory is categorized by the Linux kernel. 'Used' is memory that cannot be reclaimed. 'Cache' and 'Buffers' are reclaimable and count toward 'Available' in the main memory metrics. This breakdown explains why Proxmox shows higher memory usage than the node metrics - Proxmox sees Cache+Buffers as used, while Linux considers them available.",
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "palette-classic" },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 80,
+                "gradientMode": "none",
+                "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+                "lineInterpolation": "smooth",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": { "type": "linear" },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": { "group": "A", "mode": "normal" },
+                "thresholdsStyle": { "mode": "off" }
+              },
+              "unit": "bytes"
+            },
+            "overrides": [
+              {
+                "matcher": { "id": "byName", "options": "Used (Non-reclaimable)" },
+                "properties": [{ "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } }]
+              },
+              {
+                "matcher": { "id": "byName", "options": "Cache + Buffers" },
+                "properties": [{ "id": "color", "value": { "fixedColor": "yellow", "mode": "fixed" } }]
+              },
+              {
+                "matcher": { "id": "byName", "options": "Free" },
+                "properties": [{ "id": "color", "value": { "fixedColor": "green", "mode": "fixed" } }]
+              }
+            ]
+          },
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 31 },
+          "id": 18,
+          "options": {
+            "legend": { "calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true },
+            "tooltip": { "mode": "multi", "sort": "desc" }
+          },
+          "targets": [
+            {
+              "expr": "sum(node_memory_MemTotal_bytes - node_memory_MemFree_bytes - node_memory_Buffers_bytes - node_memory_Cached_bytes - node_memory_SReclaimable_bytes)",
+              "legendFormat": "Used (Non-reclaimable)",
+              "refId": "A"
+            },
+            {
+              "expr": "sum(node_memory_Cached_bytes + node_memory_Buffers_bytes + node_memory_SReclaimable_bytes)",
+              "legendFormat": "Cache + Buffers",
+              "refId": "B"
+            },
+            {
+              "expr": "sum(node_memory_MemFree_bytes)",
+              "legendFormat": "Free",
+              "refId": "C"
+            }
+          ],
+          "title": "Cluster Memory Breakdown",
+          "type": "timeseries"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "mimir" },
+          "description": "Per-node memory breakdown showing Used (non-reclaimable), Cache+Buffers (reclaimable), and Free memory. The sum of Cache+Buffers+Free roughly equals what Linux reports as 'Available'.",
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "palette-classic" },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 80,
+                "gradientMode": "none",
+                "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+                "lineInterpolation": "smooth",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": { "type": "linear" },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": { "group": "A", "mode": "normal" },
+                "thresholdsStyle": { "mode": "off" }
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 31 },
+          "id": 19,
+          "options": {
+            "legend": { "calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true },
+            "tooltip": { "mode": "multi", "sort": "desc" }
+          },
+          "targets": [
+            {
+              "expr": "node_memory_MemTotal_bytes - node_memory_MemFree_bytes - node_memory_Buffers_bytes - node_memory_Cached_bytes - node_memory_SReclaimable_bytes",
+              "legendFormat": "{{node}} Used",
+              "refId": "A"
+            },
+            {
+              "expr": "node_memory_Cached_bytes + node_memory_Buffers_bytes + node_memory_SReclaimable_bytes",
+              "legendFormat": "{{node}} Cache",
+              "refId": "B"
+            },
+            {
+              "expr": "node_memory_MemFree_bytes",
+              "legendFormat": "{{node}} Free",
+              "refId": "C"
+            }
+          ],
+          "title": "Memory Breakdown by Node",
+          "type": "timeseries"
+        },
+        {
+          "collapsed": false,
+          "gridPos": { "h": 1, "w": 24, "x": 0, "y": 39 },
           "id": 104,
           "panels": [],
           "title": "Disk",
@@ -615,7 +746,7 @@ data:
             },
             "overrides": []
           },
-          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 31 },
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 40 },
           "id": 12,
           "options": {
             "legend": { "calcs": ["mean", "lastNotNull", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true },
@@ -659,7 +790,7 @@ data:
             },
             "overrides": []
           },
-          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 31 },
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 40 },
           "id": 13,
           "options": {
             "legend": { "calcs": ["mean", "lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true },
@@ -682,7 +813,7 @@ data:
         },
         {
           "collapsed": false,
-          "gridPos": { "h": 1, "w": 24, "x": 0, "y": 39 },
+          "gridPos": { "h": 1, "w": 24, "x": 0, "y": 48 },
           "id": 105,
           "panels": [],
           "title": "Network",
@@ -716,7 +847,7 @@ data:
             },
             "overrides": []
           },
-          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 40 },
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 49 },
           "id": 14,
           "options": {
             "legend": { "calcs": ["mean", "lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true },
@@ -765,7 +896,7 @@ data:
             },
             "overrides": []
           },
-          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 40 },
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 49 },
           "id": 15,
           "options": {
             "legend": { "calcs": ["mean", "lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true },
@@ -798,7 +929,7 @@ data:
         },
         {
           "collapsed": false,
-          "gridPos": { "h": 1, "w": 24, "x": 0, "y": 48 },
+          "gridPos": { "h": 1, "w": 24, "x": 0, "y": 57 },
           "id": 106,
           "panels": [],
           "title": "Kubernetes Resources",
@@ -832,7 +963,7 @@ data:
             },
             "overrides": []
           },
-          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 49 },
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 58 },
           "id": 16,
           "options": {
             "legend": { "calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true },
@@ -878,7 +1009,7 @@ data:
             },
             "overrides": []
           },
-          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 49 },
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 58 },
           "id": 17,
           "options": {
             "legend": { "calcs": ["mean", "lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true },
