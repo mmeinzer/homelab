@@ -122,6 +122,32 @@ spec:
                 }
               }
 
+              // Blackbox exporter for external endpoint probing
+              prometheus.exporter.blackbox "external" {
+                config = `
+                  modules:
+                    http_2xx:
+                      prober: http
+                      timeout: 10s
+                      http:
+                        valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+                        valid_status_codes: [200]
+                        follow_redirects: true
+                        preferred_ip_protocol: ip4
+                `
+                targets = [
+                  { name = "guava-app", address = "https://app.guavascheduler.com/health", module = "http_2xx" },
+                ]
+              }
+
+              // Scrape the blackbox exporter
+              prometheus.scrape "blackbox" {
+                targets         = prometheus.exporter.blackbox.external.targets
+                job_name        = "blackbox-external"
+                scrape_interval = "30s"
+                forward_to      = [prometheus.remote_write.mimir.receiver]
+              }
+
               // Discover pods for log collection
               discovery.relabel "pod_logs" {
                 targets = discovery.kubernetes.pods.targets
