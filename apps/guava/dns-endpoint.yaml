@@ -1,0 +1,11 @@
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: guava-tunnel-dns
+  namespace: guava
+spec:
+  endpoints:
+    - dnsName: app.guavascheduler.com
+      recordType: CNAME
+      targets:
+        - "1685052f-879b-463c-b735-16eb958bf29f.cfargotunnel.com"

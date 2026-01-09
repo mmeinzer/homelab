@@ -23,11 +23,13 @@ spec:
                 key: api-token
         sources:
           - ingress
+          - crd
         policy: sync
         registry: txt
         txtOwnerId: homelab
         domainFilters:
           - vacant.dev
+          - guavascheduler.com
   destination:
     server: https://kubernetes.default.svc
     namespace: external-dns
