@@ -1,0 +1,40 @@
+# Pre-commit hooks for YAML validation
+# Install: pip install pre-commit && pre-commit install
+# Run manually: pre-commit run --all-files
+
+repos:
+  # YAML syntax validation
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
+        args: [-c, .yamllint.yaml]
+        # Exclude Talos configs (different schema)
+        exclude: ^talos/
+
+  # Local hooks for tools that need to be installed separately
+  - repo: local
+    hooks:
+      # Kubernetes schema validation
+      - id: kubeconform
+        name: kubeconform
+        entry: kubeconform -strict -ignore-missing-schemas -schema-location default -schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json'
+        language: system
+        files: ^(infrastructure|apps|argocd)/.*\.yaml$
+        exclude: kustomization\.yaml$
+
+      # Kubernetes best practices / policy checks
+      - id: kube-linter
+        name: kube-linter
+        entry: kube-linter lint --config .kube-linter.yaml
+        language: system
+        files: ^(infrastructure|apps|argocd)/.*\.yaml$
+        exclude: kustomization\.yaml$
+
+      # Kustomize build validation
+      - id: kustomize-build
+        name: kustomize-build
+        entry: bash -c 'for dir in $(dirname "$@" | sort -u); do kustomize build "$dir" > /dev/null; done' --
+        language: system
+        files: kustomization\.yaml$
+        exclude: ^talos/

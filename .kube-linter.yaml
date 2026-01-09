@@ -1,0 +1,58 @@
+# kube-linter configuration for homelab
+# Relaxed checks suitable for personal infrastructure
+
+checks:
+  # Disable checks that are too strict for homelab
+  exclude:
+    # Homelab doesn't need production-grade HA
+    - "minimum-three-replicas"
+
+    # Privileged containers sometimes needed for node-level tools
+    - "privileged-container"
+
+    # Many homelab apps run as root
+    - "run-as-non-root"
+
+    # CPU limits can cause throttling issues
+    - "unset-cpu-requirements"
+
+    # Read-only root fs breaks many apps
+    - "no-read-only-root-fs"
+
+    # Host networking sometimes needed
+    - "host-network"
+    - "host-pid"
+
+    # SSH not typically exposed in homelab
+    - "ssh-port"
+
+    # ArgoCD Image Updater manages image tags, so :latest is intentional
+    - "latest-tag"
+
+    # Can't validate services pointing to Helm-deployed pods (false positives)
+    - "dangling-service"
+
+  # Enable useful security and reliability checks
+  include:
+    # Good hygiene - always set memory limits
+    - "unset-memory-requirements"
+
+    # Catch obvious misconfigurations
+    - "no-liveness-probe"
+    - "no-readiness-probe"
+
+    # Security basics
+    - "drop-net-raw-capability"
+    - "sensitive-host-mounts"
+    - "writable-host-mount"
+
+    # Kubernetes best practices
+    - "deprecated-service-account-field"
+    - "mismatching-selector"
+    - "no-anti-affinity"
+
+ignorePaths:
+  # Ignore sealed secrets (just metadata, no actual workloads)
+  - "*-sealed.yaml"
+  # Ignore Grafana dashboard ConfigMaps (just JSON data)
+  - "grafana-dashboard-*.yaml"
