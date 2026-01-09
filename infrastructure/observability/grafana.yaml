@@ -69,6 +69,14 @@ spec:
                 editable: false
                 options:
                   path: /var/lib/grafana/dashboards/nodes
+              - name: guava-traces
+                orgId: 1
+                folder: ""
+                type: file
+                disableDeletion: false
+                editable: false
+                options:
+                  path: /var/lib/grafana/dashboards/guava-traces
 
         dashboardsConfigMaps:
           default: grafana-dashboard-guava
@@ -76,6 +84,7 @@ spec:
           namespace: grafana-dashboard-namespace
           observability: grafana-dashboard-observability
           nodes: grafana-dashboard-nodes
+          guava-traces: grafana-dashboard-guava-traces
 
         # Datasources provisioning
         datasources:
