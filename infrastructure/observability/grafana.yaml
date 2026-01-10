@@ -133,6 +133,7 @@ spec:
           ingressClassName: traefik
           annotations:
             cert-manager.io/cluster-issuer: letsencrypt-prod
+            traefik.ingress.kubernetes.io/router.middlewares: authelia-authelia-forwardauth@kubernetescrd
           hosts:
             - grafana.vacant.dev
           tls:
