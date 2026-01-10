@@ -4,7 +4,6 @@ metadata:
   name: traefik-dashboard
   namespace: traefik
   annotations:
-    traefik.ingress.kubernetes.io/router.middlewares: authelia-authelia-forwardauth@kubernetescrd
     cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: traefik
