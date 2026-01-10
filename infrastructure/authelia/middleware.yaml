@@ -3,8 +3,6 @@ kind: Middleware
 metadata:
   name: authelia-forwardauth
   namespace: authelia
-  annotations:
-    argocd.argoproj.io/sync-wave: "3"
 spec:
   forwardAuth:
     address: http://authelia.authelia.svc:9091/api/authz/forward-auth

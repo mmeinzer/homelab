@@ -3,8 +3,6 @@ kind: ConfigMap
 metadata:
   name: authelia-config
   namespace: authelia
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
 data:
   configuration.yml: |
     theme: auto

@@ -3,8 +3,6 @@ kind: Deployment
 metadata:
   name: authelia
   namespace: authelia
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
 spec:
   replicas: 1
   revisionHistoryLimit: 3
@@ -79,8 +77,6 @@ kind: Service
 metadata:
   name: authelia
   namespace: authelia
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
 spec:
   selector:
     app.kubernetes.io/name: authelia

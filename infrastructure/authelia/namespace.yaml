@@ -4,5 +4,3 @@ metadata:
   name: authelia
   labels:
     pod-security.kubernetes.io/enforce: baseline
-  annotations:
-    argocd.argoproj.io/sync-wave: "0"
