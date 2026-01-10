@@ -1,25 +1,25 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: traefik-dashboard
-  namespace: traefik
+  name: authelia
+  namespace: authelia
   annotations:
-    traefik.ingress.kubernetes.io/router.middlewares: authelia-authelia-forwardauth@kubernetescrd
+    argocd.argoproj.io/sync-wave: "3"
     cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: traefik
   tls:
-    - secretName: traefik-dashboard-tls
+    - secretName: authelia-tls
       hosts:
-        - traefik.vacant.dev
+        - auth.vacant.dev
   rules:
-    - host: traefik.vacant.dev
+    - host: auth.vacant.dev
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: traefik-dashboard
+                name: authelia
                 port:
-                  number: 8080
+                  number: 9091

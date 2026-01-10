@@ -29,6 +29,9 @@ checks:
     # ArgoCD Image Updater manages image tags, so :latest is intentional
     - "latest-tag"
 
+    # False positives on *_FILE env vars (contain paths, not secrets)
+    - "env-var-secret"
+
     # Can't validate services pointing to Helm-deployed pods (false positives)
     - "dangling-service"
 

@@ -20,11 +20,19 @@ spec:
         persistence:
           enabled: false
 
-        # Admin credentials from SealedSecret
-        admin:
-          existingSecret: grafana-admin
-          userKey: admin-user
-          passwordKey: admin-password
+        # Disable login form, trust Authelia forward auth headers
+        grafana.ini:
+          auth:
+            disable_login_form: true
+          auth.proxy:
+            enabled: true
+            header_name: Remote-User
+            header_property: username
+            auto_sign_up: true
+            headers: "Email:Remote-Email Name:Remote-Name Groups:Remote-Groups"
+          users:
+            auto_assign_org: true
+            auto_assign_org_role: Admin
 
         # Dashboard provisioning
         dashboardProviders:
@@ -125,6 +133,7 @@ spec:
           ingressClassName: traefik
           annotations:
             cert-manager.io/cluster-issuer: letsencrypt-prod
+            traefik.ingress.kubernetes.io/router.middlewares: authelia-authelia-forwardauth@kubernetescrd
           hosts:
             - grafana.vacant.dev
           tls:

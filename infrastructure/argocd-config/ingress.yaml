@@ -3,10 +3,14 @@ kind: Ingress
 metadata:
   name: argocd
   namespace: argocd
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: authelia-authelia-forwardauth@kubernetescrd
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: traefik
   tls:
-    - hosts:
+    - secretName: argocd-tls
+      hosts:
         - argocd.vacant.dev
   rules:
     - host: argocd.vacant.dev
