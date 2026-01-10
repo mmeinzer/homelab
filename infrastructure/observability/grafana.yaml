@@ -14,6 +14,8 @@ spec:
     helm:
       releaseName: grafana
       valuesObject:
+        revisionHistoryLimit: 3
+
         # No persistent storage
         persistence:
           enabled: false
