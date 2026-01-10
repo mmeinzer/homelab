@@ -16,6 +16,7 @@ spec:
       labels:
         app.kubernetes.io/name: authelia
     spec:
+      enableServiceLinks: false
       containers:
         - name: authelia
           image: ghcr.io/authelia/authelia:4.38
