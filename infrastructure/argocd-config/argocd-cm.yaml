@@ -6,3 +6,29 @@ metadata:
 data:
   # Allow anonymous access - Authelia handles authentication
   users.anonymous.enabled: "true"
+  # Resource customizations from original ArgoCD installation
+  resource.customizations.ignoreResourceUpdates.ConfigMap: |
+    jqPathExpressions:
+      - '.metadata.annotations."cluster-autoscaler.kubernetes.io/last-updated"'
+      - '.metadata.annotations."control-plane.alpha.kubernetes.io/leader"'
+  resource.customizations.ignoreResourceUpdates.Endpoints: |
+    jsonPointers:
+      - /metadata
+      - /subsets
+  resource.customizations.ignoreResourceUpdates.all: |
+    jsonPointers:
+      - /status
+  resource.customizations.ignoreResourceUpdates.apps_ReplicaSet: |
+    jqPathExpressions:
+      - '.metadata.annotations."deployment.kubernetes.io/desired-replicas"'
+      - '.metadata.annotations."deployment.kubernetes.io/max-replicas"'
+      - '.metadata.annotations."rollout.argoproj.io/desired-replicas"'
+  resource.customizations.ignoreResourceUpdates.argoproj.io_Application: |
+    jqPathExpressions:
+      - '.metadata.annotations."notified.notifications.argoproj.io"'
+      - '.metadata.annotations."argocd.argoproj.io/refresh"'
+      - '.metadata.annotations."argocd.argoproj.io/hydrate"'
+      - '.operation'
+  resource.customizations.ignoreResourceUpdates.argoproj.io_Rollout: |
+    jqPathExpressions:
+      - '.metadata.annotations."notified.notifications.argoproj.io"'
