@@ -1,0 +1,83 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://argoproj.github.io/argo-helm
+    chart: argo-cd
+    targetRevision: "9.2.4"
+    helm:
+      releaseName: argocd
+      valuesObject:
+        fullnameOverride: argocd
+
+        server:
+          ingress:
+            enabled: true
+            ingressClassName: traefik
+            annotations:
+              cert-manager.io/cluster-issuer: letsencrypt-prod
+              traefik.ingress.kubernetes.io/router.middlewares: authelia-authelia-forwardauth@kubernetescrd
+            hostname: argocd.vacant.dev
+            tls: true
+
+        configs:
+          cm:
+            users.anonymous.enabled: "true"
+            resource.customizations.ignoreResourceUpdates.ConfigMap: |
+              jqPathExpressions:
+                - '.metadata.annotations."cluster-autoscaler.kubernetes.io/last-updated"'
+                - '.metadata.annotations."control-plane.alpha.kubernetes.io/leader"'
+            resource.customizations.ignoreResourceUpdates.Endpoints: |
+              jsonPointers:
+                - /metadata
+                - /subsets
+            resource.customizations.ignoreResourceUpdates.all: |
+              jsonPointers:
+                - /status
+            resource.customizations.ignoreResourceUpdates.apps_ReplicaSet: |
+              jqPathExpressions:
+                - '.metadata.annotations."deployment.kubernetes.io/desired-replicas"'
+                - '.metadata.annotations."deployment.kubernetes.io/max-replicas"'
+                - '.metadata.annotations."rollout.argoproj.io/desired-replicas"'
+            resource.customizations.ignoreResourceUpdates.argoproj.io_Application: |
+              jqPathExpressions:
+                - '.metadata.annotations."notified.notifications.argoproj.io"'
+                - '.metadata.annotations."argocd.argoproj.io/refresh"'
+                - '.metadata.annotations."argocd.argoproj.io/hydrate"'
+                - '.operation'
+            resource.customizations.ignoreResourceUpdates.argoproj.io_Rollout: |
+              jqPathExpressions:
+                - '.metadata.annotations."notified.notifications.argoproj.io"'
+
+          rbac:
+            policy.default: role:admin
+
+          params:
+            server.insecure: "true"
+
+          secret:
+            createSecret: false
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+    retry:
+      limit: 5
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m
