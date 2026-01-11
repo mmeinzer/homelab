@@ -1,0 +1,38 @@
+# CloudNativePG PostgreSQL cluster for Guava
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: guava-db
+  namespace: guava
+spec:
+  instances: 1
+
+  imageName: ghcr.io/cloudnative-pg/postgresql:18
+
+  # Monitoring: add annotations for Alloy auto-discovery
+  inheritedMetadata:
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "9187"
+
+  bootstrap:
+    initdb:
+      database: guava
+      owner: guava
+
+  storage:
+    storageClass: longhorn
+    size: 5Gi
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
+
+  postgresql:
+    parameters:
+      shared_buffers: "128MB"
+      effective_cache_size: "256MB"
+      work_mem: "8MB"

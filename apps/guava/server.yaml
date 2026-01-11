@@ -44,8 +44,8 @@ spec:
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
-                  name: guava-secrets
-                  key: database-url
+                  name: guava-db-app
+                  key: uri
             # OpenTelemetry tracing configuration
             - name: OTEL_ENABLED
               value: "true"
