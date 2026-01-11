@@ -55,7 +55,7 @@ data:
           },
           "targets": [
             {
-              "expr": "count(cnpg_collector_up{cluster=~\"$cluster\"} == 1)",
+              "expr": "count(cnpg_collector_up{cluster=~\"$cluster\", container=\"postgres\"} == 1)",
               "legendFormat": "__auto",
               "refId": "A"
             }
@@ -85,7 +85,7 @@ data:
           },
           "targets": [
             {
-              "expr": "count(cnpg_collector_up{cluster=~\"$cluster\"})",
+              "expr": "count(cnpg_collector_up{cluster=~\"$cluster\", container=\"postgres\"})",
               "legendFormat": "__auto",
               "refId": "A"
             }
@@ -115,7 +115,7 @@ data:
           },
           "targets": [
             {
-              "expr": "sum(cnpg_pg_database_size_bytes{cluster=~\"$cluster\"})",
+              "expr": "sum(cnpg_pg_database_size_bytes{cluster=~\"$cluster\", container=\"postgres\"})",
               "legendFormat": "__auto",
               "refId": "A"
             }
@@ -145,7 +145,7 @@ data:
           },
           "targets": [
             {
-              "expr": "sum(cnpg_backends_total{cluster=~\"$cluster\"})",
+              "expr": "sum(cnpg_backends_total{cluster=~\"$cluster\", container=\"postgres\"})",
               "legendFormat": "__auto",
               "refId": "A"
             }
@@ -175,7 +175,7 @@ data:
           },
           "targets": [
             {
-              "expr": "sum(rate(cnpg_pg_stat_database_xact_commit{cluster=~\"$cluster\"}[5m]))",
+              "expr": "sum(rate(cnpg_pg_stat_database_xact_commit{cluster=~\"$cluster\", container=\"postgres\"}[5m]))",
               "legendFormat": "__auto",
               "refId": "A"
             }
@@ -212,7 +212,7 @@ data:
           },
           "targets": [
             {
-              "expr": "sum(rate(cnpg_pg_stat_database_xact_rollback{cluster=~\"$cluster\"}[5m]))",
+              "expr": "sum(rate(cnpg_pg_stat_database_xact_rollback{cluster=~\"$cluster\", container=\"postgres\"}[5m]))",
               "legendFormat": "__auto",
               "refId": "A"
             }
@@ -264,12 +264,12 @@ data:
           },
           "targets": [
             {
-              "expr": "sum(rate(cnpg_pg_stat_database_xact_commit{cluster=~\"$cluster\"}[5m])) by (cluster)",
+              "expr": "sum(rate(cnpg_pg_stat_database_xact_commit{cluster=~\"$cluster\", container=\"postgres\"}[5m])) by (cluster)",
               "legendFormat": "{{cluster}} commits",
               "refId": "A"
             },
             {
-              "expr": "sum(rate(cnpg_pg_stat_database_xact_rollback{cluster=~\"$cluster\"}[5m])) by (cluster)",
+              "expr": "sum(rate(cnpg_pg_stat_database_xact_rollback{cluster=~\"$cluster\", container=\"postgres\"}[5m])) by (cluster)",
               "legendFormat": "{{cluster}} rollbacks",
               "refId": "B"
             }
@@ -313,7 +313,7 @@ data:
           },
           "targets": [
             {
-              "expr": "sum(cnpg_backends_total{cluster=~\"$cluster\"}) by (cluster)",
+              "expr": "sum(cnpg_backends_total{cluster=~\"$cluster\", container=\"postgres\"}) by (cluster)",
               "legendFormat": "{{cluster}}",
               "refId": "A"
             }
@@ -357,22 +357,22 @@ data:
           },
           "targets": [
             {
-              "expr": "sum(rate(cnpg_pg_stat_database_tup_fetched{cluster=~\"$cluster\"}[5m])) by (cluster)",
+              "expr": "sum(rate(cnpg_pg_stat_database_tup_fetched{cluster=~\"$cluster\", container=\"postgres\"}[5m])) by (cluster)",
               "legendFormat": "{{cluster}} fetched",
               "refId": "A"
             },
             {
-              "expr": "sum(rate(cnpg_pg_stat_database_tup_inserted{cluster=~\"$cluster\"}[5m])) by (cluster)",
+              "expr": "sum(rate(cnpg_pg_stat_database_tup_inserted{cluster=~\"$cluster\", container=\"postgres\"}[5m])) by (cluster)",
               "legendFormat": "{{cluster}} inserted",
               "refId": "B"
             },
             {
-              "expr": "sum(rate(cnpg_pg_stat_database_tup_updated{cluster=~\"$cluster\"}[5m])) by (cluster)",
+              "expr": "sum(rate(cnpg_pg_stat_database_tup_updated{cluster=~\"$cluster\", container=\"postgres\"}[5m])) by (cluster)",
               "legendFormat": "{{cluster}} updated",
               "refId": "C"
             },
             {
-              "expr": "sum(rate(cnpg_pg_stat_database_tup_deleted{cluster=~\"$cluster\"}[5m])) by (cluster)",
+              "expr": "sum(rate(cnpg_pg_stat_database_tup_deleted{cluster=~\"$cluster\", container=\"postgres\"}[5m])) by (cluster)",
               "legendFormat": "{{cluster}} deleted",
               "refId": "D"
             }
@@ -416,7 +416,7 @@ data:
           },
           "targets": [
             {
-              "expr": "sum(cnpg_pg_stat_database_blks_hit{cluster=~\"$cluster\"}) by (cluster) / (sum(cnpg_pg_stat_database_blks_hit{cluster=~\"$cluster\"}) by (cluster) + sum(cnpg_pg_stat_database_blks_read{cluster=~\"$cluster\"}) by (cluster))",
+              "expr": "sum(cnpg_pg_stat_database_blks_hit{cluster=~\"$cluster\", container=\"postgres\"}) by (cluster) / (sum(cnpg_pg_stat_database_blks_hit{cluster=~\"$cluster\", container=\"postgres\"}) by (cluster) + sum(cnpg_pg_stat_database_blks_read{cluster=~\"$cluster\", container=\"postgres\"}) by (cluster))",
               "legendFormat": "{{cluster}}",
               "refId": "A"
             }
@@ -468,7 +468,7 @@ data:
           },
           "targets": [
             {
-              "expr": "sum(cnpg_pg_database_size_bytes{cluster=~\"$cluster\"}) by (cluster, datname)",
+              "expr": "sum(cnpg_pg_database_size_bytes{cluster=~\"$cluster\", container=\"postgres\"}) by (cluster, datname)",
               "legendFormat": "{{cluster}}/{{datname}}",
               "refId": "A"
             }
@@ -512,12 +512,12 @@ data:
           },
           "targets": [
             {
-              "expr": "sum(rate(cnpg_pg_stat_database_blks_read{cluster=~\"$cluster\"}[5m])) by (cluster) * 8192",
+              "expr": "sum(rate(cnpg_pg_stat_database_blks_read{cluster=~\"$cluster\", container=\"postgres\"}[5m])) by (cluster) * 8192",
               "legendFormat": "{{cluster}} read",
               "refId": "A"
             },
             {
-              "expr": "sum(rate(cnpg_pg_stat_bgwriter_buffers_backend{cluster=~\"$cluster\"}[5m])) by (cluster) * 8192",
+              "expr": "sum(rate(cnpg_pg_stat_bgwriter_buffers_backend{cluster=~\"$cluster\", container=\"postgres\"}[5m])) by (cluster) * 8192",
               "legendFormat": "{{cluster}} written",
               "refId": "B"
             }
@@ -569,7 +569,7 @@ data:
           },
           "targets": [
             {
-              "expr": "cnpg_pg_replication_lag{cluster=~\"$cluster\"}",
+              "expr": "cnpg_pg_replication_lag{cluster=~\"$cluster\", container=\"postgres\"}",
               "legendFormat": "{{cluster}}/{{pod}}",
               "refId": "A"
             }
@@ -614,7 +614,7 @@ data:
           },
           "targets": [
             {
-              "expr": "cnpg_collector_pg_wal{cluster=~\"$cluster\"}",
+              "expr": "cnpg_collector_pg_wal{cluster=~\"$cluster\", container=\"postgres\"}",
               "format": "table",
               "instant": true,
               "legendFormat": "__auto",
