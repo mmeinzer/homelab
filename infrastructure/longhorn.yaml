@@ -14,6 +14,8 @@ spec:
     helm:
       releaseName: longhorn
       valuesObject:
+        preUpgradeChecker:
+          jobEnabled: false
         defaultSettings:
           defaultReplicaCount: 2
         persistence:
@@ -27,6 +29,7 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+      - SkipDryRunOnMissingResource=true
     retry:
       limit: 5
       backoff:
