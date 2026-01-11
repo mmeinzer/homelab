@@ -23,7 +23,7 @@ data:
           authelia_url: 'https://auth.vacant.dev'
           default_redirection_url: 'https://grafana.vacant.dev'
       redis:
-        host: '10.12.14.175'
+        host: valkey.authelia.svc.cluster.local
         port: 6379
 
     storage:

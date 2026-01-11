@@ -1,0 +1,46 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: valkey
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+spec:
+  project: default
+  source:
+    repoURL: https://charts.bitnami.com/bitnami
+    chart: valkey
+    targetRevision: 3.0.24
+    helm:
+      releaseName: valkey
+      valuesObject:
+        fullnameOverride: valkey
+        architecture: standalone
+        auth:
+          enabled: true
+          existingSecret: authelia-secrets
+          existingSecretPasswordKey: redis-password
+        master:
+          persistence:
+            enabled: true
+            storageClass: longhorn
+            size: 1Gi
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: authelia
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      limit: 5
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m
