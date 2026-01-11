@@ -10,7 +10,7 @@ spec:
   source:
     repoURL: https://charts.bitnami.com/bitnami
     chart: valkey
-    targetRevision: 3.0.24
+    targetRevision: 5.1.0
     helm:
       releaseName: valkey
       valuesObject:
@@ -20,7 +20,7 @@ spec:
           enabled: true
           existingSecret: authelia-secrets
           existingSecretPasswordKey: redis-password
-        master:
+        primary:
           persistence:
             enabled: true
             storageClass: longhorn
