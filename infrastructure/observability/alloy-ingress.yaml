@@ -9,8 +9,7 @@ metadata:
 spec:
   ingressClassName: traefik
   tls:
-    - secretName: alloy-ui-tls
-      hosts:
+    - hosts:
         - alloy.vacant.dev
   rules:
     - host: alloy.vacant.dev

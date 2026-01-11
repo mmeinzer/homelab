@@ -9,8 +9,7 @@ metadata:
 spec:
   ingressClassName: traefik
   tls:
-    - secretName: traefik-dashboard-tls
-      hosts:
+    - hosts:
         - traefik.vacant.dev
   rules:
     - host: traefik.vacant.dev

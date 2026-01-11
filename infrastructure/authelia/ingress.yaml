@@ -8,8 +8,7 @@ metadata:
 spec:
   ingressClassName: traefik
   tls:
-    - secretName: authelia-tls
-      hosts:
+    - hosts:
         - auth.vacant.dev
   rules:
     - host: auth.vacant.dev

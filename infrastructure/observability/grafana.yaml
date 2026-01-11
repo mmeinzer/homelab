@@ -139,8 +139,7 @@ spec:
           hosts:
             - grafana.vacant.dev
           tls:
-            - secretName: grafana-tls
-              hosts:
+            - hosts:
                 - grafana.vacant.dev
 
         resources:
