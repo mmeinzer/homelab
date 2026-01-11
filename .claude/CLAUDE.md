@@ -7,17 +7,19 @@ Kubernetes homelab managed with ArgoCD GitOps.
 - **Kubernetes** - Container orchestration
 - **ArgoCD** - GitOps continuous delivery
 - **Helm** - Package management for K8s apps
-- **Cloudflare R2** - Object storage for observability data
+- **Longhorn** - Distributed block storage for PVCs
 
-## Observability Stack (LGTM)
+## Observability Stack
 
+- **Prometheus** - Metrics collection and storage
 - **Loki** - Log aggregation
-- **Grafana** - Dashboards and visualization
 - **Tempo** - Distributed tracing
-- **Mimir** - Metrics storage (Prometheus-compatible)
-- **Alloy** - Unified collector (metrics, logs, traces)
+- **Grafana** - Dashboards and visualization
+- **Alloy** - Log and trace collector
 
-Trace pipeline: `App (OTLP HTTP :4318) → Alloy → Tempo → R2`
+All observability data is stored locally on Longhorn PVCs.
+
+Trace pipeline: `App (OTLP HTTP :4318) → Alloy → Tempo → PVC`
 
 ## CloudNativePG (PostgreSQL)
 
@@ -47,7 +49,7 @@ env:
         key: password
 ```
 
-**Monitoring:** Clusters using the template are auto-scraped by Alloy (via prometheus annotations). View metrics in the "PostgreSQL (CloudNativePG)" Grafana dashboard.
+**Monitoring:** Clusters using the template are auto-scraped by Prometheus (via prometheus annotations). View metrics in the "PostgreSQL (CloudNativePG)" Grafana dashboard.
 
 ## Repository Structure
 
@@ -57,9 +59,9 @@ infrastructure/           # ArgoCD Application manifests
   ├── cnpg/              # CloudNativePG templates (not deployed)
   │   └── example-cluster.yaml
   └── observability/     # Observability stack components
+      ├── prometheus.yaml
       ├── tempo.yaml
       ├── loki.yaml
-      ├── mimir.yaml
       ├── alloy.yaml
       ├── grafana.yaml
       └── grafana-dashboard-*.yaml  # Dashboard ConfigMaps
@@ -89,7 +91,7 @@ kubectl annotate application <app> -n argocd argocd.argoproj.io/refresh=hard --o
 ## Datasource UIDs
 
 When referencing datasources in Grafana dashboards:
-- Mimir (metrics): `uid: mimir`
+- Prometheus (metrics): `uid: prometheus`
 - Loki (logs): `uid: loki`
 - Tempo (traces): `uid: tempo`
 
@@ -105,4 +107,4 @@ See `.claude/rules/` for context-specific guidance:
 - `/check-sync <app>` - Check ArgoCD sync status
 - `/debug-pod <ns> <pod>` - Debug pod with logs and events
 - `/list-apps` - List all ArgoCD applications
-- `/query-metrics [term]` - Query Mimir for available metrics
+- `/query-metrics [term]` - Query Prometheus for available metrics

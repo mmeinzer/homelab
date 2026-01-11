@@ -1,0 +1,165 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prometheus
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: default
+  source:
+    repoURL: https://prometheus-community.github.io/helm-charts
+    chart: prometheus
+    targetRevision: 28.2.0
+    helm:
+      releaseName: prometheus
+      valuesObject:
+        fullnameOverride: prometheus
+
+        # Disable components we already have or don't need
+        alertmanager:
+          enabled: false
+        kube-state-metrics:
+          enabled: false  # Already deployed separately
+        prometheus-node-exporter:
+          enabled: false  # Already deployed separately
+        prometheus-pushgateway:
+          enabled: false
+
+        server:
+          fullnameOverride: prometheus
+
+          # Persistent storage with Longhorn
+          persistentVolume:
+            enabled: true
+            size: 20Gi
+            storageClass: longhorn
+
+          # Retention
+          retention: 30d
+
+          # Resources
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              memory: 1Gi
+
+          # Pod annotations for self-scraping
+          podAnnotations:
+            prometheus.io/scrape: "true"
+            prometheus.io/port: "9090"
+
+        # Scrape configs - Kubernetes service discovery
+        serverFiles:
+          prometheus.yml:
+            scrape_configs:
+              # Scrape pods with prometheus.io annotations
+              - job_name: kubernetes-pods
+                kubernetes_sd_configs:
+                  - role: pod
+                relabel_configs:
+                  # Only scrape pods with prometheus.io/scrape=true
+                  - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+                    action: keep
+                    regex: "true"
+                  # Drop init containers
+                  - source_labels: [__meta_kubernetes_pod_container_init]
+                    action: drop
+                    regex: "true"
+                  # Use custom port if specified
+                  - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_port, __meta_kubernetes_pod_ip]
+                    action: replace
+                    regex: (\d+);(.+)
+                    replacement: $2:$1
+                    target_label: __address__
+                  # Use custom path if specified
+                  - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+                    action: replace
+                    regex: (.+)
+                    target_label: __metrics_path__
+                  # Add standard labels
+                  - source_labels: [__meta_kubernetes_namespace]
+                    target_label: namespace
+                  - source_labels: [__meta_kubernetes_pod_name]
+                    target_label: pod
+                  - source_labels: [__meta_kubernetes_pod_container_name]
+                    target_label: container
+
+              # Scrape kubelet metrics
+              - job_name: kubelet
+                kubernetes_sd_configs:
+                  - role: node
+                scheme: https
+                tls_config:
+                  insecure_skip_verify: true
+                bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+                relabel_configs:
+                  - source_labels: [__meta_kubernetes_node_address_InternalIP]
+                    target_label: __address__
+                    replacement: $1:10250
+                  - source_labels: [__meta_kubernetes_node_name]
+                    target_label: node
+
+              # Scrape cAdvisor metrics
+              - job_name: cadvisor
+                kubernetes_sd_configs:
+                  - role: node
+                scheme: https
+                metrics_path: /metrics/cadvisor
+                tls_config:
+                  insecure_skip_verify: true
+                bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+                relabel_configs:
+                  - source_labels: [__meta_kubernetes_node_address_InternalIP]
+                    target_label: __address__
+                    replacement: $1:10250
+                  - source_labels: [__meta_kubernetes_node_name]
+                    target_label: node
+
+              # Scrape node-exporter
+              - job_name: node-exporter
+                kubernetes_sd_configs:
+                  - role: endpoints
+                    namespaces:
+                      names:
+                        - observability
+                relabel_configs:
+                  - source_labels: [__meta_kubernetes_service_name]
+                    action: keep
+                    regex: node-exporter
+                  - source_labels: [__meta_kubernetes_endpoint_node_name]
+                    target_label: node
+                  - source_labels: [__meta_kubernetes_namespace]
+                    target_label: namespace
+
+              # Scrape kube-state-metrics
+              - job_name: kube-state-metrics
+                kubernetes_sd_configs:
+                  - role: endpoints
+                    namespaces:
+                      names:
+                        - observability
+                relabel_configs:
+                  - source_labels: [__meta_kubernetes_service_name]
+                    action: keep
+                    regex: kube-state-metrics
+                  - source_labels: [__meta_kubernetes_namespace]
+                    target_label: namespace
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m

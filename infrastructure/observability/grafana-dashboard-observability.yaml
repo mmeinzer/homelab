@@ -30,11 +30,11 @@ data:
           "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
           "id": 100,
           "panels": [],
-          "title": "Mimir - Overview",
+          "title": "Prometheus - Overview",
           "type": "row"
         },
         {
-          "datasource": { "type": "prometheus", "uid": "mimir" },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": {
             "defaults": {
               "color": { "mode": "thresholds" },
@@ -55,16 +55,16 @@ data:
           },
           "targets": [
             {
-              "expr": "up{pod=~\"mimir.*\"}",
+              "expr": "up{pod=~\"prometheus.*\"}",
               "legendFormat": "__auto",
               "refId": "A"
             }
           ],
-          "title": "Mimir Up",
+          "title": "Prometheus Up",
           "type": "stat"
         },
         {
-          "datasource": { "type": "prometheus", "uid": "mimir" },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": {
             "defaults": {
               "color": { "mode": "thresholds" },
@@ -85,7 +85,7 @@ data:
           },
           "targets": [
             {
-              "expr": "sum(cortex_ingester_memory_series)",
+              "expr": "prometheus_tsdb_head_series",
               "legendFormat": "__auto",
               "refId": "A"
             }
@@ -94,7 +94,7 @@ data:
           "type": "stat"
         },
         {
-          "datasource": { "type": "prometheus", "uid": "mimir" },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": {
             "defaults": {
               "color": { "mode": "thresholds" },
@@ -115,7 +115,7 @@ data:
           },
           "targets": [
             {
-              "expr": "sum(rate(cortex_ingester_ingested_samples_total[5m]))",
+              "expr": "rate(prometheus_tsdb_head_samples_appended_total[5m])",
               "legendFormat": "__auto",
               "refId": "A"
             }
@@ -124,7 +124,7 @@ data:
           "type": "stat"
         },
         {
-          "datasource": { "type": "prometheus", "uid": "mimir" },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": {
             "defaults": {
               "color": { "mode": "thresholds" },
@@ -145,16 +145,16 @@ data:
           },
           "targets": [
             {
-              "expr": "sum(container_memory_working_set_bytes{pod=~\"mimir.*\", container!=\"\", container!=\"POD\"})",
+              "expr": "sum(container_memory_working_set_bytes{pod=~\"prometheus.*\", container!=\"\", container!=\"POD\"})",
               "legendFormat": "__auto",
               "refId": "A"
             }
           ],
-          "title": "Mimir Memory",
+          "title": "Prometheus Memory",
           "type": "stat"
         },
         {
-          "datasource": { "type": "prometheus", "uid": "mimir" },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": {
             "defaults": {
               "color": { "mode": "thresholds" },
@@ -184,7 +184,7 @@ data:
           "type": "stat"
         },
         {
-          "datasource": { "type": "prometheus", "uid": "mimir" },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": {
             "defaults": {
               "color": { "mode": "thresholds" },
@@ -218,11 +218,11 @@ data:
           "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
           "id": 101,
           "panels": [],
-          "title": "Mimir - Ingestion",
+          "title": "Prometheus - Ingestion",
           "type": "row"
         },
         {
-          "datasource": { "type": "prometheus", "uid": "mimir" },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": {
             "defaults": {
               "color": { "mode": "palette-classic" },
@@ -257,7 +257,7 @@ data:
           },
           "targets": [
             {
-              "expr": "sum(rate(cortex_ingester_ingested_samples_total[5m]))",
+              "expr": "rate(prometheus_tsdb_head_samples_appended_total[5m])",
               "legendFormat": "samples/sec",
               "refId": "A"
             }
@@ -266,7 +266,7 @@ data:
           "type": "timeseries"
         },
         {
-          "datasource": { "type": "prometheus", "uid": "mimir" },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": {
             "defaults": {
               "color": { "mode": "palette-classic" },
@@ -301,7 +301,7 @@ data:
           },
           "targets": [
             {
-              "expr": "sum(cortex_ingester_memory_series)",
+              "expr": "prometheus_tsdb_head_series",
               "legendFormat": "active series",
               "refId": "A"
             }
@@ -314,11 +314,11 @@ data:
           "gridPos": { "h": 1, "w": 24, "x": 0, "y": 14 },
           "id": 102,
           "panels": [],
-          "title": "Mimir - Query Performance",
+          "title": "Prometheus - Query Performance",
           "type": "row"
         },
         {
-          "datasource": { "type": "prometheus", "uid": "mimir" },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": {
             "defaults": {
               "color": { "mode": "palette-classic" },
@@ -353,7 +353,7 @@ data:
           },
           "targets": [
             {
-              "expr": "sum(rate(cortex_request_duration_seconds_count{route=~\"/prometheus/api/v1/query.*\"}[5m]))",
+              "expr": "sum(rate(prometheus_http_requests_total{handler=~\"/api/v1/query.*\"}[5m]))",
               "legendFormat": "queries/sec",
               "refId": "A"
             }
@@ -362,7 +362,7 @@ data:
           "type": "timeseries"
         },
         {
-          "datasource": { "type": "prometheus", "uid": "mimir" },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": {
             "defaults": {
               "color": { "mode": "palette-classic" },
@@ -397,17 +397,17 @@ data:
           },
           "targets": [
             {
-              "expr": "histogram_quantile(0.50, sum(rate(cortex_request_duration_seconds_bucket{route=~\"/prometheus/api/v1/query.*\"}[5m])) by (le))",
+              "expr": "histogram_quantile(0.50, sum(rate(prometheus_engine_query_duration_seconds_bucket{slice=\"inner_eval\"}[5m])) by (le))",
               "legendFormat": "p50",
               "refId": "A"
             },
             {
-              "expr": "histogram_quantile(0.95, sum(rate(cortex_request_duration_seconds_bucket{route=~\"/prometheus/api/v1/query.*\"}[5m])) by (le))",
+              "expr": "histogram_quantile(0.95, sum(rate(prometheus_engine_query_duration_seconds_bucket{slice=\"inner_eval\"}[5m])) by (le))",
               "legendFormat": "p95",
               "refId": "B"
             },
             {
-              "expr": "histogram_quantile(0.99, sum(rate(cortex_request_duration_seconds_bucket{route=~\"/prometheus/api/v1/query.*\"}[5m])) by (le))",
+              "expr": "histogram_quantile(0.99, sum(rate(prometheus_engine_query_duration_seconds_bucket{slice=\"inner_eval\"}[5m])) by (le))",
               "legendFormat": "p99",
               "refId": "C"
             }
@@ -424,7 +424,7 @@ data:
           "type": "row"
         },
         {
-          "datasource": { "type": "prometheus", "uid": "mimir" },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": {
             "defaults": {
               "color": { "mode": "palette-classic" },
@@ -468,7 +468,7 @@ data:
           "type": "timeseries"
         },
         {
-          "datasource": { "type": "prometheus", "uid": "mimir" },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": {
             "defaults": {
               "color": { "mode": "palette-classic" },
@@ -520,7 +520,7 @@ data:
           "type": "row"
         },
         {
-          "datasource": { "type": "prometheus", "uid": "mimir" },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": {
             "defaults": {
               "color": { "mode": "palette-classic" },
@@ -564,7 +564,7 @@ data:
           "type": "timeseries"
         },
         {
-          "datasource": { "type": "prometheus", "uid": "mimir" },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": {
             "defaults": {
               "color": { "mode": "palette-classic" },
@@ -626,7 +626,7 @@ data:
           "type": "row"
         },
         {
-          "datasource": { "type": "prometheus", "uid": "mimir" },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": {
             "defaults": {
               "color": { "mode": "palette-classic" },
@@ -661,8 +661,8 @@ data:
           },
           "targets": [
             {
-              "expr": "sum(rate(container_cpu_usage_seconds_total{pod=~\"mimir.*\", container!=\"\", container!=\"POD\"}[5m]))",
-              "legendFormat": "Mimir",
+              "expr": "sum(rate(container_cpu_usage_seconds_total{pod=~\"prometheus.*\", container!=\"\", container!=\"POD\"}[5m]))",
+              "legendFormat": "Prometheus",
               "refId": "A"
             },
             {
@@ -679,13 +679,18 @@ data:
               "expr": "sum(rate(container_cpu_usage_seconds_total{pod=~\"grafana.*\", container!=\"\", container!=\"POD\"}[5m]))",
               "legendFormat": "Grafana",
               "refId": "D"
+            },
+            {
+              "expr": "sum(rate(container_cpu_usage_seconds_total{pod=~\"tempo.*\", container!=\"\", container!=\"POD\"}[5m]))",
+              "legendFormat": "Tempo",
+              "refId": "E"
             }
           ],
           "title": "CPU Usage",
           "type": "timeseries"
         },
         {
-          "datasource": { "type": "prometheus", "uid": "mimir" },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": {
             "defaults": {
               "color": { "mode": "palette-classic" },
@@ -720,8 +725,8 @@ data:
           },
           "targets": [
             {
-              "expr": "sum(container_memory_working_set_bytes{pod=~\"mimir.*\", container!=\"\", container!=\"POD\"})",
-              "legendFormat": "Mimir",
+              "expr": "sum(container_memory_working_set_bytes{pod=~\"prometheus.*\", container!=\"\", container!=\"POD\"})",
+              "legendFormat": "Prometheus",
               "refId": "A"
             },
             {
@@ -738,6 +743,11 @@ data:
               "expr": "sum(container_memory_working_set_bytes{pod=~\"grafana.*\", container!=\"\", container!=\"POD\"})",
               "legendFormat": "Grafana",
               "refId": "D"
+            },
+            {
+              "expr": "sum(container_memory_working_set_bytes{pod=~\"tempo.*\", container!=\"\", container!=\"POD\"})",
+              "legendFormat": "Tempo",
+              "refId": "E"
             }
           ],
           "title": "Memory Usage",
@@ -746,7 +756,7 @@ data:
       ],
       "preload": false,
       "schemaVersion": 40,
-      "tags": ["observability", "mimir", "loki"],
+      "tags": ["observability", "prometheus", "loki"],
       "templating": { "list": [] },
       "time": { "from": "now-1h", "to": "now" },
       "timepicker": {},

@@ -6,26 +6,26 @@ paths: infrastructure/observability/grafana-dashboard-*.yaml
 
 ## Discovering Available Metrics
 
-Query Mimir to find metric names before building panels.
+Query Prometheus to find metric names before building panels.
 
 ```bash
-# Port-forward to Mimir
-kubectl port-forward -n observability svc/mimir 8080:8080 &
+# Port-forward to Prometheus
+kubectl port-forward -n observability svc/prometheus 9090:80 &
 
 # List all metric names
-curl -s http://localhost:8080/prometheus/api/v1/label/__name__/values | jq -r '.data[]' | head -50
+curl -s http://localhost:9090/api/v1/label/__name__/values | jq -r '.data[]' | head -50
 
 # Search for specific metrics
-curl -s http://localhost:8080/prometheus/api/v1/label/__name__/values | jq -r '.data[]' | grep -i "container"
+curl -s http://localhost:9090/api/v1/label/__name__/values | jq -r '.data[]' | grep -i "container"
 
 # Get labels for a metric
-curl -s 'http://localhost:8080/prometheus/api/v1/series?match[]=container_cpu_usage_seconds_total' | jq '.data[0]'
+curl -s 'http://localhost:9090/api/v1/series?match[]=container_cpu_usage_seconds_total' | jq '.data[0]'
 
 # Test a PromQL query
-curl -s 'http://localhost:8080/prometheus/api/v1/query?query=sum(rate(container_cpu_usage_seconds_total[5m]))' | jq '.data.result'
+curl -s 'http://localhost:9090/api/v1/query?query=sum(rate(container_cpu_usage_seconds_total[5m]))' | jq '.data.result'
 
 # Query with label filter
-curl -s 'http://localhost:8080/prometheus/api/v1/query?query=container_memory_usage_bytes{namespace="guava"}' | jq '.data.result'
+curl -s 'http://localhost:9090/api/v1/query?query=container_memory_usage_bytes{namespace="guava"}' | jq '.data.result'
 ```
 
 ### Common Metric Prefixes
@@ -85,7 +85,7 @@ curl -s 'http://localhost:3200/api/traces/<traceID>' | jq '.batches[].scopeSpans
         {
           "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"guava\"}[5m])) by (pod)",
           "legendFormat": "{{pod}}",
-          "datasource": { "type": "prometheus", "uid": "mimir" }
+          "datasource": { "type": "prometheus", "uid": "prometheus" }
         }
       ]
     }
@@ -135,7 +135,7 @@ dashboardsConfigMaps:
 Always use UID references:
 
 ```json
-"datasource": { "type": "prometheus", "uid": "mimir" }
+"datasource": { "type": "prometheus", "uid": "prometheus" }
 "datasource": { "type": "loki", "uid": "loki" }
 "datasource": { "type": "tempo", "uid": "tempo" }
 ```
@@ -148,7 +148,7 @@ Always use UID references:
     {
       "name": "namespace",
       "type": "query",
-      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "query": "label_values(kube_pod_info, namespace)",
       "refresh": 2
     }
