@@ -43,6 +43,8 @@ spec:
       selfHeal: true
     syncOptions:
       - SkipDryRunOnMissingResource=true
+      - RespectIgnoreDifferences=true
+      - ServerSideApply=true
     retry:
       limit: 5
       backoff:
