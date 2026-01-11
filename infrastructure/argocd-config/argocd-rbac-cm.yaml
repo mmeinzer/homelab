@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: argocd-rbac-cm
-  namespace: argocd
-data:
-  # Give anonymous users admin access (they're already authed via Authelia)
-  policy.default: role:admin
