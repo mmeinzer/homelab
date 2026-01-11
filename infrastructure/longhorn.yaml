@@ -27,6 +27,7 @@ spec:
           tls: true
           annotations:
             cert-manager.io/cluster-issuer: letsencrypt-prod
+            traefik.ingress.kubernetes.io/router.middlewares: authelia-authelia-forwardauth@kubernetescrd
   destination:
     server: https://kubernetes.default.svc
     namespace: longhorn-system
