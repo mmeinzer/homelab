@@ -20,6 +20,13 @@ spec:
           defaultReplicaCount: 2
         persistence:
           defaultClassReplicaCount: 2
+        ingress:
+          enabled: true
+          ingressClassName: traefik
+          host: longhorn.vacant.dev
+          tls: true
+          annotations:
+            cert-manager.io/cluster-issuer: letsencrypt-prod
   destination:
     server: https://kubernetes.default.svc
     namespace: longhorn-system
