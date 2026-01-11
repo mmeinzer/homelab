@@ -5,7 +5,6 @@ resources:
   - postgres.yaml
   - server.yaml
   - solver.yaml
-  - secrets-sealed.yaml
   - ghcr-creds-sealed.yaml
   - cloudflared.yaml
   - cloudflared-credentials-sealed.yaml
