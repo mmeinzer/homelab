@@ -79,6 +79,20 @@ spec:
                 regex: kube-state-metrics
               - source_labels: [__meta_kubernetes_namespace]
                 target_label: namespace
+          - job_name: integrations/blackbox/guava-app
+            metrics_path: /probe
+            params:
+              module: [http_2xx]
+            static_configs:
+              - targets:
+                  - https://app.guavascheduler.com/health
+            relabel_configs:
+              - source_labels: [__address__]
+                target_label: __param_target
+              - source_labels: [__param_target]
+                target_label: instance
+              - target_label: __address__
+                replacement: blackbox-exporter.observability.svc:9115
 
   destination:
     server: https://kubernetes.default.svc
