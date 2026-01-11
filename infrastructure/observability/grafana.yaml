@@ -89,6 +89,14 @@ spec:
                 editable: false
                 options:
                   path: /var/lib/grafana/dashboards/guava-traces
+              - name: postgresql
+                orgId: 1
+                folder: ""
+                type: file
+                disableDeletion: false
+                editable: false
+                options:
+                  path: /var/lib/grafana/dashboards/postgresql
 
         dashboardsConfigMaps:
           default: grafana-dashboard-guava
@@ -97,6 +105,7 @@ spec:
           observability: grafana-dashboard-observability
           nodes: grafana-dashboard-nodes
           guava-traces: grafana-dashboard-guava-traces
+          postgresql: grafana-dashboard-postgresql
 
         # Datasources provisioning
         datasources:

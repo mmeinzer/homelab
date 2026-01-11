@@ -47,6 +47,8 @@ env:
         key: password
 ```
 
+**Monitoring:** Clusters using the template are auto-scraped by Alloy (via prometheus annotations). View metrics in the "PostgreSQL (CloudNativePG)" Grafana dashboard.
+
 ## Repository Structure
 
 ```

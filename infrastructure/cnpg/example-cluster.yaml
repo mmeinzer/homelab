@@ -32,6 +32,12 @@ spec:
   # PostgreSQL version
   imageName: ghcr.io/cloudnative-pg/postgresql:18
 
+  # Monitoring: add annotations for Alloy auto-discovery
+  inheritedMetadata:
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "9187"
+
   # Bootstrap: initialize a fresh database
   bootstrap:
     initdb:
