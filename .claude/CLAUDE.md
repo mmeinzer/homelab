@@ -19,11 +19,41 @@ Kubernetes homelab managed with ArgoCD GitOps.
 
 Trace pipeline: `App (OTLP HTTP :4318) → Alloy → Tempo → R2`
 
+## CloudNativePG (PostgreSQL)
+
+PostgreSQL clusters are managed by the CloudNativePG operator (`cnpg-operator.yaml`).
+
+**Creating a database for an app:**
+```bash
+cp infrastructure/cnpg/example-cluster.yaml apps/myapp/postgres.yaml
+# Edit: name, namespace, database, owner, storage size
+# Commit and push
+```
+
+**Auto-created resources** (after deploying a Cluster):
+- `<cluster>-app` Secret - connection credentials
+- `<cluster>-rw` Service - read-write (primary)
+- `<cluster>-ro` Service - read-only (replicas)
+
+**Connecting from an app:**
+```yaml
+env:
+  - name: DATABASE_URL
+    value: postgresql://myapp-db-rw:5432/myapp
+  - name: PGPASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: myapp-db-app
+        key: password
+```
+
 ## Repository Structure
 
 ```
 infrastructure/           # ArgoCD Application manifests
   ├── *.yaml             # Parent apps (point to subdirectories)
+  ├── cnpg/              # CloudNativePG templates (not deployed)
+  │   └── example-cluster.yaml
   └── observability/     # Observability stack components
       ├── tempo.yaml
       ├── loki.yaml

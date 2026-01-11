@@ -1,0 +1,90 @@
+# CloudNativePG Cluster Template
+#
+# This is a TEMPLATE - not deployed (no ArgoCD app points to this directory).
+# Copy to your app's directory to use.
+#
+# Usage:
+#   cp infrastructure/cnpg/example-cluster.yaml apps/myapp/postgres.yaml
+#   # Edit: name, namespace, database, owner, storage size
+#   # Commit and push - ArgoCD will deploy it
+#
+# After deploying, CNPG creates these resources automatically:
+#   - Secret: <cluster-name>-app (connection credentials)
+#   - Service: <cluster-name>-rw (read-write, points to primary)
+#   - Service: <cluster-name>-ro (read-only, load balances replicas)
+#   - Service: <cluster-name>-r (read, load balances all instances)
+#
+# Connection string (from app in same namespace):
+#   postgresql://<cluster-name>-rw:5432/<database>
+#
+# Credentials are in the -app secret:
+#   kubectl get secret <cluster-name>-app -o jsonpath='{.data.password}' | base64 -d
+
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: myapp-db
+  namespace: myapp  # Deploy in your app's namespace
+spec:
+  # Number of instances (1 = no HA, 3 = HA with auto-failover)
+  instances: 1
+
+  # PostgreSQL version
+  imageName: ghcr.io/cloudnative-pg/postgresql:18
+
+  # Bootstrap: initialize a fresh database
+  bootstrap:
+    initdb:
+      database: myapp
+      owner: myapp
+      # Optional: run SQL after init
+      # postInitSQL:
+      #   - CREATE EXTENSION IF NOT EXISTS "uuid-ossp"
+
+  # Storage configuration
+  storage:
+    storageClass: longhorn
+    size: 5Gi
+
+  # Resource limits
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
+
+  # PostgreSQL configuration
+  postgresql:
+    parameters:
+      # Tune for small instance
+      shared_buffers: "128MB"
+      effective_cache_size: "256MB"
+      work_mem: "8MB"
+
+  # # Optional: Backup to R2 (uncomment to enable)
+  # backup:
+  #   barmanObjectStore:
+  #     destinationPath: s3://your-bucket/cnpg/myapp-db
+  #     endpointURL: https://<account-id>.r2.cloudflarestorage.com
+  #     s3Credentials:
+  #       accessKeyId:
+  #         name: r2-credentials
+  #         key: access-key-id
+  #       secretAccessKey:
+  #         name: r2-credentials
+  #         key: secret-access-key
+  #   retentionPolicy: "7d"
+
+  # # Optional: Scheduled backups
+  # # Requires backup configuration above
+  # ---
+  # apiVersion: postgresql.cnpg.io/v1
+  # kind: ScheduledBackup
+  # metadata:
+  #   name: myapp-db-daily
+  # spec:
+  #   schedule: "0 2 * * *"  # 2 AM daily
+  #   backupOwnerReference: self
+  #   cluster:
+  #     name: myapp-db
