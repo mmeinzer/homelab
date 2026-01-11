@@ -55,7 +55,7 @@ data:
           },
           "targets": [
             {
-              "expr": "count(cnpg_collector_up{cluster=~\"$cluster\"} == 1)",
+              "expr": "count(cnpg_collector_up{cnpg_io_cluster=~\"$cluster\"} == 1)",
               "legendFormat": "__auto",
               "refId": "A"
             }
@@ -85,7 +85,7 @@ data:
           },
           "targets": [
             {
-              "expr": "count(cnpg_collector_up{cluster=~\"$cluster\"})",
+              "expr": "count(cnpg_collector_up{cnpg_io_cluster=~\"$cluster\"})",
               "legendFormat": "__auto",
               "refId": "A"
             }
@@ -115,7 +115,7 @@ data:
           },
           "targets": [
             {
-              "expr": "sum(cnpg_pg_database_size_bytes{cluster=~\"$cluster\"})",
+              "expr": "sum(cnpg_pg_database_size_bytes{cnpg_io_cluster=~\"$cluster\"})",
               "legendFormat": "__auto",
               "refId": "A"
             }
@@ -145,7 +145,7 @@ data:
           },
           "targets": [
             {
-              "expr": "sum(cnpg_backends_total{cluster=~\"$cluster\"})",
+              "expr": "sum(cnpg_backends_total{cnpg_io_cluster=~\"$cluster\"})",
               "legendFormat": "__auto",
               "refId": "A"
             }
@@ -175,7 +175,7 @@ data:
           },
           "targets": [
             {
-              "expr": "sum(rate(cnpg_pg_stat_database_xact_commit{cluster=~\"$cluster\"}[5m]))",
+              "expr": "sum(rate(cnpg_pg_stat_database_xact_commit{cnpg_io_cluster=~\"$cluster\"}[5m]))",
               "legendFormat": "__auto",
               "refId": "A"
             }
@@ -212,7 +212,7 @@ data:
           },
           "targets": [
             {
-              "expr": "sum(rate(cnpg_pg_stat_database_xact_rollback{cluster=~\"$cluster\"}[5m]))",
+              "expr": "sum(rate(cnpg_pg_stat_database_xact_rollback{cnpg_io_cluster=~\"$cluster\"}[5m]))",
               "legendFormat": "__auto",
               "refId": "A"
             }
@@ -264,13 +264,13 @@ data:
           },
           "targets": [
             {
-              "expr": "sum(rate(cnpg_pg_stat_database_xact_commit{cluster=~\"$cluster\"}[5m])) by (cluster)",
-              "legendFormat": "{{cluster}} commits",
+              "expr": "sum(rate(cnpg_pg_stat_database_xact_commit{cnpg_io_cluster=~\"$cluster\"}[5m])) by (cnpg_io_cluster)",
+              "legendFormat": "{{cnpg_io_cluster}} commits",
               "refId": "A"
             },
             {
-              "expr": "sum(rate(cnpg_pg_stat_database_xact_rollback{cluster=~\"$cluster\"}[5m])) by (cluster)",
-              "legendFormat": "{{cluster}} rollbacks",
+              "expr": "sum(rate(cnpg_pg_stat_database_xact_rollback{cnpg_io_cluster=~\"$cluster\"}[5m])) by (cnpg_io_cluster)",
+              "legendFormat": "{{cnpg_io_cluster}} rollbacks",
               "refId": "B"
             }
           ],
@@ -313,8 +313,8 @@ data:
           },
           "targets": [
             {
-              "expr": "sum(cnpg_backends_total{cluster=~\"$cluster\"}) by (cluster)",
-              "legendFormat": "{{cluster}}",
+              "expr": "sum(cnpg_backends_total{cnpg_io_cluster=~\"$cluster\"}) by (cnpg_io_cluster)",
+              "legendFormat": "{{cnpg_io_cluster}}",
               "refId": "A"
             }
           ],
@@ -357,23 +357,23 @@ data:
           },
           "targets": [
             {
-              "expr": "sum(rate(cnpg_pg_stat_database_tup_fetched{cluster=~\"$cluster\"}[5m])) by (cluster)",
-              "legendFormat": "{{cluster}} fetched",
+              "expr": "sum(rate(cnpg_pg_stat_database_tup_fetched{cnpg_io_cluster=~\"$cluster\"}[5m])) by (cnpg_io_cluster)",
+              "legendFormat": "{{cnpg_io_cluster}} fetched",
               "refId": "A"
             },
             {
-              "expr": "sum(rate(cnpg_pg_stat_database_tup_inserted{cluster=~\"$cluster\"}[5m])) by (cluster)",
-              "legendFormat": "{{cluster}} inserted",
+              "expr": "sum(rate(cnpg_pg_stat_database_tup_inserted{cnpg_io_cluster=~\"$cluster\"}[5m])) by (cnpg_io_cluster)",
+              "legendFormat": "{{cnpg_io_cluster}} inserted",
               "refId": "B"
             },
             {
-              "expr": "sum(rate(cnpg_pg_stat_database_tup_updated{cluster=~\"$cluster\"}[5m])) by (cluster)",
-              "legendFormat": "{{cluster}} updated",
+              "expr": "sum(rate(cnpg_pg_stat_database_tup_updated{cnpg_io_cluster=~\"$cluster\"}[5m])) by (cnpg_io_cluster)",
+              "legendFormat": "{{cnpg_io_cluster}} updated",
               "refId": "C"
             },
             {
-              "expr": "sum(rate(cnpg_pg_stat_database_tup_deleted{cluster=~\"$cluster\"}[5m])) by (cluster)",
-              "legendFormat": "{{cluster}} deleted",
+              "expr": "sum(rate(cnpg_pg_stat_database_tup_deleted{cnpg_io_cluster=~\"$cluster\"}[5m])) by (cnpg_io_cluster)",
+              "legendFormat": "{{cnpg_io_cluster}} deleted",
               "refId": "D"
             }
           ],
@@ -416,8 +416,8 @@ data:
           },
           "targets": [
             {
-              "expr": "sum(cnpg_pg_stat_database_blks_hit{cluster=~\"$cluster\"}) by (cluster) / (sum(cnpg_pg_stat_database_blks_hit{cluster=~\"$cluster\"}) by (cluster) + sum(cnpg_pg_stat_database_blks_read{cluster=~\"$cluster\"}) by (cluster))",
-              "legendFormat": "{{cluster}}",
+              "expr": "sum(cnpg_pg_stat_database_blks_hit{cnpg_io_cluster=~\"$cluster\"}) by (cnpg_io_cluster) / (sum(cnpg_pg_stat_database_blks_hit{cnpg_io_cluster=~\"$cluster\"}) by (cnpg_io_cluster) + sum(cnpg_pg_stat_database_blks_read{cnpg_io_cluster=~\"$cluster\"}) by (cnpg_io_cluster))",
+              "legendFormat": "{{cnpg_io_cluster}}",
               "refId": "A"
             }
           ],
@@ -468,8 +468,8 @@ data:
           },
           "targets": [
             {
-              "expr": "sum(cnpg_pg_database_size_bytes{cluster=~\"$cluster\"}) by (cluster, datname)",
-              "legendFormat": "{{cluster}}/{{datname}}",
+              "expr": "sum(cnpg_pg_database_size_bytes{cnpg_io_cluster=~\"$cluster\"}) by (cnpg_io_cluster, datname)",
+              "legendFormat": "{{cnpg_io_cluster}}/{{datname}}",
               "refId": "A"
             }
           ],
@@ -512,13 +512,13 @@ data:
           },
           "targets": [
             {
-              "expr": "sum(rate(cnpg_pg_stat_database_blks_read{cluster=~\"$cluster\"}[5m])) by (cluster) * 8192",
-              "legendFormat": "{{cluster}} read",
+              "expr": "sum(rate(cnpg_pg_stat_database_blks_read{cnpg_io_cluster=~\"$cluster\"}[5m])) by (cnpg_io_cluster) * 8192",
+              "legendFormat": "{{cnpg_io_cluster}} read",
               "refId": "A"
             },
             {
-              "expr": "sum(rate(cnpg_pg_stat_bgwriter_buffers_backend{cluster=~\"$cluster\"}[5m])) by (cluster) * 8192",
-              "legendFormat": "{{cluster}} written",
+              "expr": "sum(rate(cnpg_pg_stat_bgwriter_buffers_backend{cnpg_io_cluster=~\"$cluster\"}[5m])) by (cnpg_io_cluster) * 8192",
+              "legendFormat": "{{cnpg_io_cluster}} written",
               "refId": "B"
             }
           ],
@@ -569,8 +569,8 @@ data:
           },
           "targets": [
             {
-              "expr": "cnpg_pg_replication_lag{cluster=~\"$cluster\"}",
-              "legendFormat": "{{cluster}}/{{pod}}",
+              "expr": "cnpg_pg_replication_lag{cnpg_io_cluster=~\"$cluster\"}",
+              "legendFormat": "{{cnpg_io_cluster}}/{{pod}}",
               "refId": "A"
             }
           ],
@@ -614,7 +614,7 @@ data:
           },
           "targets": [
             {
-              "expr": "cnpg_collector_pg_wal{cluster=~\"$cluster\"}",
+              "expr": "cnpg_collector_pg_wal{cnpg_io_cluster=~\"$cluster\"}",
               "format": "table",
               "instant": true,
               "legendFormat": "__auto",
@@ -640,13 +640,13 @@ data:
           {
             "current": { "selected": true, "text": "All", "value": "$__all" },
             "datasource": { "type": "prometheus", "uid": "prometheus" },
-            "definition": "label_values(cnpg_collector_up, cluster)",
+            "definition": "label_values(cnpg_collector_up, cnpg_io_cluster)",
             "hide": 0,
             "includeAll": true,
             "multi": true,
             "name": "cluster",
             "options": [],
-            "query": { "query": "label_values(cnpg_collector_up, cluster)", "refId": "StandardVariableQuery" },
+            "query": { "query": "label_values(cnpg_collector_up, cnpg_io_cluster)", "refId": "StandardVariableQuery" },
             "refresh": 2,
             "regex": "",
             "skipUrlSync": false,
