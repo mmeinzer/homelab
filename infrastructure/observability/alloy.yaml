@@ -66,6 +66,13 @@ spec:
                   action        = "keep"
                 }
 
+                // Drop init containers (they share pod annotations but aren't running)
+                rule {
+                  source_labels = ["__meta_kubernetes_pod_container_init"]
+                  regex         = "true"
+                  action        = "drop"
+                }
+
                 // Use custom port if specified
                 rule {
                   source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_port", "__meta_kubernetes_pod_ip"]
@@ -354,3 +361,9 @@ spec:
       prune: true
       selfHeal: true
     syncOptions: []
+    retry:
+      limit: 5
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m
