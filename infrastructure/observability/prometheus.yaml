@@ -36,7 +36,7 @@ spec:
             storageClass: longhorn
 
           # Retention
-          retention: 30d
+          retention: 15d
 
           # Resources
           resources:
