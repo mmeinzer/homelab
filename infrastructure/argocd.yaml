@@ -34,7 +34,7 @@ spec:
             - name: sops-age
               mountPath: /sops-age
             - name: custom-tools
-              mountPath: /usr/local/bin/ksops
+              mountPath: /home/argocd/kustomize/plugin/viaduct.ai/v1/ksops/ksops
               subPath: ksops
           initContainers:
             - name: install-ksops
