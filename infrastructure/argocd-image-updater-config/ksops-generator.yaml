@@ -1,0 +1,6 @@
+apiVersion: viaduct.ai/v1
+kind: ksops
+metadata:
+  name: ghcr-pullsecret-generator
+files:
+  - ./ghcr-pullsecret.sops.yaml

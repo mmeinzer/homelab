@@ -10,6 +10,17 @@ helm repo update
 echo "Installing ArgoCD via Helm..."
 kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
 
+echo "Creating SOPS age key secret..."
+SOPS_AGE_KEY_FILE="${SOPS_AGE_KEY_FILE:-$HOME/.sops/age.key}"
+if [ ! -f "$SOPS_AGE_KEY_FILE" ]; then
+  echo "Error: Age key not found at $SOPS_AGE_KEY_FILE"
+  echo "Generate one with: age-keygen -o ~/.sops/age.key"
+  exit 1
+fi
+kubectl create secret generic sops-age-key -n argocd \
+  --from-file=age.key="$SOPS_AGE_KEY_FILE" \
+  --dry-run=client -o yaml | kubectl apply -f -
+
 helm upgrade --install argocd argo/argo-cd \
   --namespace argocd \
   --version "${ARGOCD_CHART_VERSION}" \

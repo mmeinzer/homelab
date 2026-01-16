@@ -1,2 +1,5 @@
 kubeconfig
 talos/
+
+# Plaintext secrets (extracted for SOPS encoding)
+.secrets-plaintext/

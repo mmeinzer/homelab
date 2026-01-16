@@ -5,10 +5,11 @@ resources:
   - postgres.yaml
   - server.yaml
   - solver.yaml
-  - ghcr-creds-sealed.yaml
   - cloudflared.yaml
-  - cloudflared-credentials-sealed.yaml
   - dns-endpoint.yaml
+
+generators:
+  - ksops-generator.yaml
 
 images:
   - name: ghcr.io/mmeinzer/guava

@@ -1,0 +1,7 @@
+apiVersion: viaduct.ai/v1
+kind: ksops
+metadata:
+  name: guava-secrets-generator
+files:
+  - ./ghcr-creds.sops.yaml
+  - ./cloudflared-credentials.sops.yaml
