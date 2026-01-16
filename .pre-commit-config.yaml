@@ -9,8 +9,8 @@ repos:
     hooks:
       - id: yamllint
         args: [-c, .yamllint.yaml]
-        # Exclude Talos configs (different schema)
-        exclude: ^talos/
+        # Exclude Talos configs and SOPS-encrypted files
+        exclude: (^talos/|\.sops\.yaml$)
 
   # Local hooks for tools that need to be installed separately
   - repo: local
@@ -32,9 +32,10 @@ repos:
         exclude: kustomization\.yaml$
 
       # Kustomize build validation
+      # Note: Directories with KSOPS generators are excluded (require KSOPS plugin)
       - id: kustomize-build
         name: kustomize-build
-        entry: bash -c 'for dir in $(dirname "$@" | sort -u); do kustomize build "$dir" > /dev/null; done' --
+        entry: bash -c 'for dir in $(dirname "$@" | sort -u); do if [ ! -f "$dir/ksops-generator.yaml" ]; then kustomize build "$dir" > /dev/null; fi; done' --
         language: system
         files: kustomization\.yaml$
         exclude: ^talos/

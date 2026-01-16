@@ -18,6 +18,34 @@ spec:
       valuesObject:
         fullnameOverride: argocd
 
+        repoServer:
+          env:
+            - name: SOPS_AGE_KEY_FILE
+              value: /sops-age/age.key
+            - name: XDG_CONFIG_HOME
+              value: /home/argocd
+          volumes:
+            - name: sops-age
+              secret:
+                secretName: sops-age-key
+            - name: custom-tools
+              emptyDir: {}
+          volumeMounts:
+            - name: sops-age
+              mountPath: /sops-age
+            - name: custom-tools
+              mountPath: /usr/local/bin/ksops
+              subPath: ksops
+          initContainers:
+            - name: install-ksops
+              image: viaductoss/ksops:v4.3.2
+              command: [sh, -c]
+              args:
+                - cp /usr/local/bin/ksops /custom-tools/ksops
+              volumeMounts:
+                - name: custom-tools
+                  mountPath: /custom-tools
+
         server:
           ingress:
             enabled: true
@@ -31,6 +59,7 @@ spec:
         configs:
           cm:
             users.anonymous.enabled: "true"
+            kustomize.buildOptions: --enable-alpha-plugins --enable-exec
             resource.customizations.ignoreResourceUpdates.ConfigMap: |
               jqPathExpressions:
                 - '.metadata.annotations."cluster-autoscaler.kubernetes.io/last-updated"'
