@@ -55,7 +55,5 @@ checks:
     - "no-anti-affinity"
 
 ignorePaths:
-  # Ignore sealed secrets (just metadata, no actual workloads)
-  - "*-sealed.yaml"
   # Ignore Grafana dashboard ConfigMaps (just JSON data)
   - "grafana-dashboard-*.yaml"

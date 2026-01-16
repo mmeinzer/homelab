@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-ARGOCD_CHART_VERSION="9.2.4"
+ARGOCD_CHART_VERSION="9.3.4"
 
 echo "Adding Argo Helm repository..."
 helm repo add argo https://argoproj.github.io/argo-helm

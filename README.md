@@ -35,7 +35,7 @@ GitOps-managed Kubernetes homelab running on Talos Linux.
 - **MetalLB** - Bare metal LoadBalancer
 - **Traefik** - Ingress controller
 - **cert-manager** - Automatic TLS certificates via Let's Encrypt
-- **Sealed Secrets** - Encrypted secrets in git
+- **SOPS + Age** - Encrypted secrets in git
 - **external-dns** - Automatic DNS record management via Cloudflare
 
 ## Cluster Initialization (Talos)
@@ -103,26 +103,20 @@ TLS is handled automatically via cert-manager with Cloudflare DNS-01 challenge. 
 
 **Prerequisites:**
 1. Create a Cloudflare API token with `Zone:DNS:Edit` permission
-2. Install `kubeseal` CLI locally
+2. Install `sops` and `age` CLI tools locally
 
-**Create sealed secrets** (one for cert-manager, one for external-dns):
+**Create SOPS-encrypted secrets** (one for cert-manager, one for external-dns):
 ```bash
-# For cert-manager (TLS certificates)
+# Create plaintext secret, then encrypt with SOPS
 kubectl create secret generic cloudflare-api-token \
   --namespace=cert-manager \
   --from-literal=api-token=YOUR_TOKEN \
-  --dry-run=client -o yaml | \
-  kubeseal --controller-name=sealed-secrets --controller-namespace=kube-system -o yaml \
-  > infrastructure/cert-manager-config/cloudflare-token-sealed.yaml
+  --dry-run=client -o yaml > /tmp/secret.yaml
 
-# For external-dns (DNS record management)
-kubectl create secret generic cloudflare-api-token \
-  --namespace=external-dns \
-  --from-literal=api-token=YOUR_TOKEN \
-  --dry-run=client -o yaml | \
-  kubeseal --controller-name=sealed-secrets --controller-namespace=kube-system -o yaml \
-  > infrastructure/external-dns-config/cloudflare-token-sealed.yaml
+sops --encrypt /tmp/secret.yaml > infrastructure/cert-manager-config/cloudflare-token.sops.yaml
 ```
+
+See `scripts/encode-sops-secrets.sh` for batch encryption of multiple secrets.
 
 **DNS is automatic:** When you create an IngressRoute with a host like `Host(\`myapp.vacant.dev\`)`, external-dns automatically creates the A record in Cloudflare pointing to Traefik's LoadBalancer IP.
 
@@ -133,16 +127,14 @@ ArgoCD applications are deployed in order using sync waves:
 | Wave | Application | Description |
 |------|-------------|-------------|
 | -1 | namespaces | Pre-create namespaces with required labels |
-| 0 | metallb | LoadBalancer controller |
-| 1 | metallb-config | IP address pool configuration |
+| 0 | metallb, longhorn | LoadBalancer controller, storage |
+| 1 | metallb-config, cnpg-operator | IP pool, PostgreSQL operator |
 | 2 | traefik | Ingress controller |
-| 3 | sealed-secrets | Secret encryption controller |
-| 4 | cert-manager | TLS certificate management |
-| 4 | external-dns-config | Cloudflare API token for DNS |
-| 5 | cert-manager-config | ClusterIssuer, certificates |
-| 5 | external-dns | Automatic DNS record management |
-| 6 | argocd-config | ArgoCD ingress route |
-| 10 | observability | Metrics/logging stack (Mimir, Loki, Alloy, Grafana) |
+| 3 | argocd-secrets, traefik-config | SOPS secrets, dashboard |
+| 4 | argocd, cert-manager, valkey | GitOps, TLS, cache |
+| 5 | authelia, cert-manager-config, external-dns | Auth, certs, DNS |
+| 7-8 | argocd-image-updater | Auto image updates |
+| 10 | observability | Prometheus, Loki, Tempo, Grafana |
 
 ## Adding New Applications
 
@@ -178,81 +170,32 @@ ArgoCD applications are deployed in order using sync waves:
 
 ### Observability Stack
 
-Metrics and logging with Grafana, Mimir (metrics, monolithic mode), Loki (logs), and Alloy (collector). All data stored in Cloudflare R2.
+Metrics, logs, and traces with Prometheus, Loki, Tempo, and Grafana. All data stored on Longhorn PVCs.
 
-**Prerequisites:**
-1. Create Cloudflare R2 buckets: `mimir-homelab`, `loki-homelab`
-2. Create R2 API token with read/write access
+| Component | Purpose | Storage |
+|-----------|---------|---------|
+| Prometheus | Metrics | 20Gi PVC |
+| Loki | Logs | 20Gi PVC |
+| Tempo | Traces | 10Gi PVC |
+| Alloy | Log/trace collector | - |
+| Grafana | Dashboards | - |
 
-**Sealed Secrets (regenerate if values change):**
-
-| Secret | Namespace | Keys |
-|--------|-----------|------|
-| `r2-credentials` | observability | `access_key_id`, `secret_access_key` |
-| `grafana-admin` | observability | `admin-password` |
-
-```bash
-# R2 credentials for Mimir and Loki storage
-kubectl create secret generic r2-credentials \
-  --namespace=observability \
-  --from-literal=access_key_id=YOUR_R2_ACCESS_KEY \
-  --from-literal=secret_access_key=YOUR_R2_SECRET_KEY \
-  --dry-run=client -o yaml | \
-  kubeseal --controller-name=sealed-secrets --controller-namespace=kube-system -o yaml \
-  > infrastructure/observability/r2-credentials-sealed.yaml
-
-# Grafana admin password
-kubectl create secret generic grafana-admin \
-  --namespace=observability \
-  --from-literal=admin-password=YOUR_PASSWORD \
-  --dry-run=client -o yaml | \
-  kubeseal --controller-name=sealed-secrets --controller-namespace=kube-system -o yaml \
-  > infrastructure/observability/grafana-admin-sealed.yaml
-```
-
-**Access Grafana:** https://grafana.vacant.dev (admin / your password)
+**Access Grafana:** https://grafana.vacant.dev
 
 ### Guava
 
-Rotation scheduling application. Requires external PostgreSQL database.
+Rotation scheduling application with CloudNativePG-managed PostgreSQL.
 
 **Access:** https://app.guavascheduler.com (exposed via Cloudflare Tunnel, not Traefik)
 
-**Sealed Secrets (regenerate if values change):**
+**Secrets** (SOPS-encrypted in `apps/guava/`):
 
-| Secret | Namespace | How to Create |
-|--------|-----------|---------------|
-| `guava-secrets` | guava | Database connection string |
-| `ghcr-creds` | guava | GitHub Container Registry pull credentials |
-| `cloudflared-credentials` | guava | Cloudflare Tunnel credentials JSON |
+| Secret | Purpose |
+|--------|---------|
+| `ghcr-creds.sops.yaml` | GitHub Container Registry pull credentials |
+| `cloudflared-credentials.sops.yaml` | Cloudflare Tunnel credentials |
 
-```bash
-# Database connection
-kubectl create secret generic guava-secrets \
-  --namespace=guava \
-  --from-literal=database-url="postgres://user:pass@host:5432/guava?sslmode=disable" \
-  --dry-run=client -o yaml | \
-  kubeseal --controller-name=sealed-secrets --controller-namespace=kube-system -o yaml \
-  > apps/guava/secrets-sealed.yaml
-
-# GitHub Container Registry (requires PAT with read:packages scope)
-kubectl create secret docker-registry ghcr-creds \
-  --namespace=guava \
-  --docker-server=ghcr.io \
-  --docker-username=mmeinzer \
-  --docker-password=YOUR_GITHUB_PAT \
-  --dry-run=client -o yaml | \
-  kubeseal --controller-name=sealed-secrets --controller-namespace=kube-system -o yaml \
-  > apps/guava/ghcr-creds-sealed.yaml
-
-# Cloudflare Tunnel credentials (download credentials.json from Cloudflare Zero Trust dashboard)
-kubectl create secret generic cloudflared-credentials \
-  --namespace=guava \
-  --from-file=credentials.json=/path/to/credentials.json \
-  --dry-run=client -o yaml | \
-  kubeseal --controller-name=sealed-secrets --controller-namespace=kube-system -o yaml \
-  > apps/guava/cloudflared-credentials-sealed.yaml
-```
+Database credentials are auto-generated by CloudNativePG (`guava-db-app` secret).
 
 ## IP Allocations
 
