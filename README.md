@@ -25,7 +25,7 @@ GitOps-managed Kubernetes homelab running on Talos Linux.
 
     ┌───────────────────────────────┐         ┌───────────────────────────────┐
     │  Cloudflare Tunnel (separate) │         │       cloudflared pod         │
-    │  app.guavascheduler.com       │ ──────► │       (outbound only)         │ ──────► Guava
+    │  app.guavasuite.com           │ ──────► │       (outbound only)         │ ──────► Guava
     └───────────────────────────────┘         └───────────────────────────────┘
 ```
 
@@ -186,7 +186,7 @@ Metrics, logs, and traces with Prometheus, Loki, Tempo, and Grafana. All data st
 
 Rotation scheduling application with CloudNativePG-managed PostgreSQL.
 
-**Access:** https://app.guavascheduler.com (exposed via Cloudflare Tunnel, not Traefik)
+**Access:** https://app.guavasuite.com (exposed via Cloudflare Tunnel, not Traefik)
 
 **Secrets** (SOPS-encrypted in `apps/guava/`):
 

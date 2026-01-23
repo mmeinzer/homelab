@@ -29,7 +29,7 @@ spec:
         txtOwnerId: homelab
         domainFilters:
           - vacant.dev
-          - guavascheduler.com
+          - guavasuite.com
   destination:
     server: https://kubernetes.default.svc
     namespace: external-dns
