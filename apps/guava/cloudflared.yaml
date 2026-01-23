@@ -10,10 +10,10 @@ data:
     metrics: 0.0.0.0:2000
     no-autoupdate: true
     ingress:
-      - hostname: app.guavascheduler.com
+      - hostname: app.guavasuite.com
         path: "^/metrics/?$"
         service: http_status:403
-      - hostname: app.guavascheduler.com
+      - hostname: app.guavasuite.com
         service: http://guava-server.guava.svc.cluster.local:80
       - service: http_status:404
 ---
