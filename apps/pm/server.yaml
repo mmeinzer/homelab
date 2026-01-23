@@ -100,14 +100,12 @@ spec:
             - name: OTEL_RESOURCE_ATTRIBUTES
               value: "deployment.environment=homelab,service.namespace=pm"
           livenessProbe:
-            httpGet:
-              path: /health
+            tcpSocket:
               port: 8081
             initialDelaySeconds: 10
             periodSeconds: 10
           readinessProbe:
-            httpGet:
-              path: /health
+            tcpSocket:
               port: 8081
             initialDelaySeconds: 5
             periodSeconds: 5
