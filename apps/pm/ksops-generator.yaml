@@ -1,0 +1,8 @@
+apiVersion: viaduct.ai/v1
+kind: ksops
+metadata:
+  name: pm-secrets-generator
+files:
+  - ./ghcr-creds.sops.yaml
+  - ./cloudflared-credentials.sops.yaml
+  - ./pm-secrets.sops.yaml

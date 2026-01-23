@@ -1,0 +1,14 @@
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: pm-tunnel-dns
+  namespace: pm
+spec:
+  endpoints:
+    - dnsName: pm.example.com
+      recordType: CNAME
+      targets:
+        - "TUNNEL_ID_PLACEHOLDER.cfargotunnel.com"
+      providerSpecific:
+        - name: external-dns.alpha.kubernetes.io/cloudflare-proxied
+          value: "true"
