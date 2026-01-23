@@ -5,15 +5,15 @@ metadata:
   namespace: pm
 data:
   config.yaml: |
-    tunnel: TUNNEL_ID_PLACEHOLDER
+    tunnel: 795303f3-d7a7-40f2-8d80-70e3518f0828
     credentials-file: /etc/cloudflared/credentials/credentials.json
     metrics: 0.0.0.0:2000
     no-autoupdate: true
     ingress:
-      - hostname: pm.example.com
+      - hostname: pm.guavasuite.com
         path: "^/metrics/?$"
         service: http_status:403
-      - hostname: pm.example.com
+      - hostname: pm.guavasuite.com
         service: http://pm-server.pm.svc.cluster.local:80
       - service: http_status:404
 ---
