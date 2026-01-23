@@ -1,0 +1,125 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pm-server
+  namespace: pm
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: pm-server
+  template:
+    metadata:
+      labels:
+        app: pm-server
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8081"
+        prometheus.io/path: "/metrics"
+    spec:
+      imagePullSecrets:
+        - name: ghcr-creds
+      containers:
+        - name: pm-server
+          image: ghcr.io/mmeinzer/pm:latest
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            capabilities:
+              drop: ["ALL"]
+            seccompProfile:
+              type: RuntimeDefault
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          ports:
+            - containerPort: 8081
+          env:
+            # Database connection from CNPG
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: pm-db-app
+                  key: uri
+            # Google OAuth
+            - name: GOOGLE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: pm-secrets
+                  key: google-client-id
+            - name: GOOGLE_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: pm-secrets
+                  key: google-client-secret
+            # OpenRouter LLM
+            - name: OPENROUTER_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: pm-secrets
+                  key: openrouter-api-key
+            - name: OPENROUTER_MODEL
+              valueFrom:
+                secretKeyRef:
+                  name: pm-secrets
+                  key: openrouter-model
+            # Slack integration
+            - name: SLACK_BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: pm-secrets
+                  key: slack-bot-token
+            - name: SLACK_SIGNING_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: pm-secrets
+                  key: slack-signing-secret
+            # Session secret
+            - name: SESSION_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: pm-secrets
+                  key: session-secret
+            # Base URL for OAuth callbacks
+            - name: BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: pm-secrets
+                  key: base-url
+            # OpenTelemetry tracing configuration
+            - name: OTEL_ENABLED
+              value: "true"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "alloy.observability.svc:4318"
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "deployment.environment=homelab,service.namespace=pm"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8081
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8081
+            initialDelaySeconds: 5
+            periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pm-server
+  namespace: pm
+spec:
+  selector:
+    app: pm-server
+  ports:
+    - port: 80
+      targetPort: 8081
