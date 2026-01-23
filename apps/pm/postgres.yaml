@@ -7,8 +7,8 @@ metadata:
 spec:
   instances: 1
 
-  # PostgreSQL with pgvector extension (pgvector included)
-  imageName: pgvector/pgvector:pg17
+  # PostgreSQL 18 with pgvector (included in CNPG base image)
+  imageName: ghcr.io/cloudnative-pg/postgresql:18
 
   # Monitoring: add annotations for Alloy auto-discovery
   inheritedMetadata:
