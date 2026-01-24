@@ -30,6 +30,9 @@ spec:
             - sh
             - -c
             - |
+              # Create writable directories for host mode
+              mkdir -p /data/home /data/tool_cache /data/cache/go-build /data/go
+
               # Register runner if not already registered
               if [ ! -f /data/.runner ]; then
                 act_runner register \
@@ -50,6 +53,17 @@ spec:
                 secretKeyRef:
                   name: act-runner-token
                   key: token
+            # Writable directories for host mode execution
+            - name: HOME
+              value: /data/home
+            - name: RUNNER_TOOL_CACHE
+              value: /data/tool_cache
+            - name: XDG_CACHE_HOME
+              value: /data/cache
+            - name: GOCACHE
+              value: /data/cache/go-build
+            - name: GOPATH
+              value: /data/go
           volumeMounts:
             - name: config
               mountPath: /config
