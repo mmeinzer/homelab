@@ -10,7 +10,7 @@ spec:
   source:
     repoURL: oci://code.forgejo.org/forgejo-helm
     chart: forgejo
-    targetRevision: "12.0.0"
+    targetRevision: "16.0.1"
     helm:
       releaseName: forgejo
       valuesObject:
