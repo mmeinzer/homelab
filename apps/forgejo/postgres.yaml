@@ -1,4 +1,4 @@
-# apps/forgejo/postgres.yaml
+# CloudNativePG PostgreSQL cluster for Forgejo
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
@@ -9,7 +9,12 @@ metadata:
 spec:
   instances: 1
 
-  imageName: ghcr.io/cloudnative-pg/postgresql:17.2
+  imageName: ghcr.io/cloudnative-pg/postgresql:18
+
+  inheritedMetadata:
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "9187"
 
   bootstrap:
     initdb:
@@ -28,10 +33,8 @@ spec:
       memory: "512Mi"
       cpu: "500m"
 
-  monitoring:
-    enablePodMonitor: false
-
   postgresql:
     parameters:
       shared_buffers: "128MB"
       effective_cache_size: "256MB"
+      work_mem: "8MB"
