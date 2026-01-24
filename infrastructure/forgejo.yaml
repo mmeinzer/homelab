@@ -19,6 +19,26 @@ spec:
         image:
           rootless: true
 
+        # Security context for Pod Security Standards (restricted)
+        podSecurityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+          fsGroup: 1000
+          seccompProfile:
+            type: RuntimeDefault
+
+        containerSecurityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1000
+          seccompProfile:
+            type: RuntimeDefault
+
         resources:
           requests:
             cpu: 100m
