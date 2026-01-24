@@ -14,8 +14,17 @@ spec:
     helm:
       releaseName: forgejo
       valuesObject:
+        fullnameOverride: forgejo
+
         image:
           rootless: true
+
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            memory: 512Mi
 
         persistence:
           enabled: true
@@ -26,6 +35,13 @@ spec:
           admin:
             existingSecret: forgejo-admin
             passwordKey: password
+
+          additionalConfigFromEnvs:
+            - name: FORGEJO__DATABASE__PASSWD
+              valueFrom:
+                secretKeyRef:
+                  name: forgejo-db-app
+                  key: password
 
           config:
             server:
