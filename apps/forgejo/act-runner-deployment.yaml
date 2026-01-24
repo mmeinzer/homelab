@@ -33,6 +33,7 @@ spec:
               # Register runner if not already registered
               if [ ! -f /data/.runner ]; then
                 act_runner register \
+                  --config /config/config.yaml \
                   --instance "${FORGEJO_URL}" \
                   --token "${RUNNER_TOKEN}" \
                   --name "k8s-runner" \
