@@ -16,8 +16,8 @@ data:
       fetch_timeout: 5s
       fetch_interval: 2s
       labels:
-        - "ubuntu-latest:k8s://node:20-bookworm"
-        - "ubuntu-22.04:k8s://node:20-bookworm"
+        - "ubuntu-latest:host"
+        - "ubuntu-22.04:host"
 
     cache:
       enabled: true
