@@ -7,3 +7,6 @@ generators:
 resources:
   - namespace.yaml
   - postgres.yaml
+  - act-runner-config.yaml
+  - act-runner-rbac.yaml
+  - act-runner-deployment.yaml

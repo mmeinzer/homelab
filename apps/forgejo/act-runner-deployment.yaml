@@ -1,0 +1,106 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: act-runner
+  namespace: forgejo
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: act-runner
+  template:
+    metadata:
+      labels:
+        app: act-runner
+    spec:
+      serviceAccountName: act-runner
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+        - name: act-runner
+          image: gitea/act_runner:0.2.12
+          command:
+            - sh
+            - -c
+            - |
+              # Register runner if not already registered
+              if [ ! -f /data/.runner ]; then
+                act_runner register \
+                  --instance "${FORGEJO_URL}" \
+                  --token "${RUNNER_TOKEN}" \
+                  --name "k8s-runner" \
+                  --labels "ubuntu-latest,ubuntu-22.04" \
+                  --no-interactive
+              fi
+              # Start the runner
+              act_runner daemon --config /config/config.yaml
+          env:
+            - name: FORGEJO_URL
+              value: "http://forgejo-http:3000"
+            - name: RUNNER_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: act-runner-token
+                  key: token
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: data
+              mountPath: /data
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pgrep -f "act_runner daemon" > /dev/null
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - test -f /data/.runner
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            seccompProfile:
+              type: RuntimeDefault
+      volumes:
+        - name: config
+          configMap:
+            name: act-runner-config
+        - name: data
+          persistentVolumeClaim:
+            claimName: act-runner-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: act-runner-data
+  namespace: forgejo
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 5Gi
