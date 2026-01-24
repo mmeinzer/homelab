@@ -4,3 +4,4 @@ metadata:
   name: forgejo-secrets-generator
 files:
   - ./forgejo-secrets.sops.yaml
+  - ./act-runner-token.sops.yaml
