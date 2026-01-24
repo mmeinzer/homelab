@@ -1,0 +1,37 @@
+# apps/forgejo/postgres.yaml
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: forgejo-db
+  namespace: forgejo
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  instances: 1
+
+  imageName: ghcr.io/cloudnative-pg/postgresql:17.2
+
+  bootstrap:
+    initdb:
+      database: forgejo
+      owner: forgejo
+
+  storage:
+    size: 5Gi
+    storageClass: longhorn
+
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+  monitoring:
+    enablePodMonitor: false
+
+  postgresql:
+    parameters:
+      shared_buffers: "128MB"
+      effective_cache_size: "256MB"
