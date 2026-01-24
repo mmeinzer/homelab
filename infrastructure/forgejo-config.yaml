@@ -1,0 +1,29 @@
+# infrastructure/forgejo-config.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: forgejo-config
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "9"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/mmeinzer/homelab.git
+    targetRevision: main
+    path: apps/forgejo
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: forgejo
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m
