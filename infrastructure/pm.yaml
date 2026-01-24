@@ -3,6 +3,10 @@ kind: Application
 metadata:
   name: pm
   namespace: argocd
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: pm=git.vacant.dev/mmeinzer/pm
+    argocd-image-updater.argoproj.io/pm.update-strategy: latest
+    argocd-image-updater.argoproj.io/pm.pull-secret: pullsecret:argocd/forgejo-registry-creds
 spec:
   project: default
   source:
