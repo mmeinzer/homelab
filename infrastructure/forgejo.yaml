@@ -8,8 +8,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: oci://code.forgejo.org/forgejo-helm
-    chart: forgejo
+    repoURL: oci://code.forgejo.org/forgejo-helm/forgejo
     targetRevision: "16.0.1"
     helm:
       releaseName: forgejo
