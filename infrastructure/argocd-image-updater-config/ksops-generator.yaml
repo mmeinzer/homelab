@@ -4,4 +4,3 @@ metadata:
   name: ghcr-pullsecret-generator
 files:
   - ./ghcr-pullsecret.sops.yaml
-  - ./forgejo-registry-secret.sops.yaml
