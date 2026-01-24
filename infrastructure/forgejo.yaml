@@ -1,0 +1,127 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: forgejo
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+spec:
+  project: default
+  source:
+    repoURL: oci://code.forgejo.org/forgejo-helm
+    chart: forgejo
+    targetRevision: "12.0.0"
+    helm:
+      releaseName: forgejo
+      valuesObject:
+        fullnameOverride: forgejo
+
+        image:
+          rootless: true
+
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            memory: 512Mi
+
+        persistence:
+          enabled: true
+          size: 10Gi
+          storageClass: longhorn
+
+        gitea:
+          admin:
+            existingSecret: forgejo-admin
+            passwordKey: password
+
+          additionalConfigFromEnvs:
+            - name: FORGEJO__DATABASE__PASSWD
+              valueFrom:
+                secretKeyRef:
+                  name: forgejo-db-app
+                  key: password
+
+          config:
+            server:
+              DOMAIN: git.vacant.dev
+              ROOT_URL: https://git.vacant.dev
+              SSH_DOMAIN: git.vacant.dev
+              SSH_PORT: 22
+
+            database:
+              DB_TYPE: postgres
+              HOST: forgejo-db-rw:5432
+              NAME: forgejo
+              USER: forgejo
+
+            # Enable Actions
+            actions:
+              ENABLED: true
+              DEFAULT_ACTIONS_URL: https://code.forgejo.org
+
+            # Enable container registry
+            packages:
+              ENABLED: true
+
+            # Security
+            service:
+              DISABLE_REGISTRATION: true
+              REQUIRE_SIGNIN_VIEW: false
+
+            # Mailer (disabled for now)
+            mailer:
+              ENABLED: false
+
+            # Session
+            session:
+              PROVIDER: db
+
+            # Cache
+            cache:
+              ADAPTER: memory
+
+            # Queue
+            queue:
+              TYPE: level
+
+            # Indexer
+            indexer:
+              ISSUE_INDEXER_TYPE: bleve
+              REPO_INDEXER_ENABLED: true
+
+        postgresql:
+          enabled: false
+
+        ingress:
+          enabled: true
+          className: traefik
+          annotations:
+            cert-manager.io/cluster-issuer: letsencrypt-prod
+          hosts:
+            - host: git.vacant.dev
+              paths:
+                - path: /
+                  pathType: Prefix
+          tls:
+            - secretName: forgejo-tls
+              hosts:
+                - git.vacant.dev
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: forgejo
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+    retry:
+      limit: 5
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m

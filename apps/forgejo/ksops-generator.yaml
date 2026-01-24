@@ -1,0 +1,6 @@
+apiVersion: viaduct.ai/v1
+kind: ksops
+metadata:
+  name: forgejo-secrets-generator
+files:
+  - ./forgejo-secrets.sops.yaml

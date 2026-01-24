@@ -1,21 +1,20 @@
+# infrastructure/forgejo-config.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: pm
+  name: forgejo-config
   namespace: argocd
   annotations:
-    argocd-image-updater.argoproj.io/image-list: pm=git.vacant.dev/mmeinzer/pm
-    argocd-image-updater.argoproj.io/pm.update-strategy: latest
-    argocd-image-updater.argoproj.io/pm.pull-secret: pullsecret:argocd/forgejo-registry-creds
+    argocd.argoproj.io/sync-wave: "9"
 spec:
   project: default
   source:
     repoURL: https://github.com/mmeinzer/homelab.git
     targetRevision: main
-    path: apps/pm
+    path: apps/forgejo
   destination:
     server: https://kubernetes.default.svc
-    namespace: pm
+    namespace: forgejo
   syncPolicy:
     automated:
       prune: true
