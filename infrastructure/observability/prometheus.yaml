@@ -32,7 +32,7 @@ spec:
           # Persistent storage with Longhorn
           persistentVolume:
             enabled: true
-            size: 20Gi
+            size: 30Gi
             storageClass: longhorn
 
           # Retention
