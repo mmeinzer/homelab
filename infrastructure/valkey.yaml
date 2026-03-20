@@ -10,7 +10,7 @@ spec:
   source:
     repoURL: https://charts.bitnami.com/bitnami
     chart: valkey
-    targetRevision: 5.4.3
+    targetRevision: 5.4.8
     helm:
       releaseName: valkey
       valuesObject:
