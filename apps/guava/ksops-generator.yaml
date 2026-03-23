@@ -5,3 +5,4 @@ metadata:
 files:
   - ./ghcr-creds.sops.yaml
   - ./cloudflared-credentials.sops.yaml
+  - ./r2-credentials.sops.yaml

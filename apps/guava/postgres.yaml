@@ -36,3 +36,28 @@ spec:
       shared_buffers: "128MB"
       effective_cache_size: "256MB"
       work_mem: "8MB"
+      archive_timeout: "300"
+
+  backup:
+    barmanObjectStore:
+      destinationPath: s3://guava-kube-backups/cnpg/guava-db
+      endpointURL: https://afc0de0b67de79f311811d5c36e790bd.r2.cloudflarestorage.com
+      s3Credentials:
+        accessKeyId:
+          name: r2-credentials
+          key: access-key-id
+        secretAccessKey:
+          name: r2-credentials
+          key: secret-access-key
+    retentionPolicy: "30d"
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: guava-db-weekly
+  namespace: guava
+spec:
+  schedule: "0 2 * * 0"
+  backupOwnerReference: self
+  cluster:
+    name: guava-db

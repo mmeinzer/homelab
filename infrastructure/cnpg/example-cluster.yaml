@@ -68,10 +68,15 @@ spec:
       effective_cache_size: "256MB"
       work_mem: "8MB"
 
-  # # Optional: Backup to R2 (uncomment to enable)
+  # Optional: Backup to R2 (uncomment to enable)
+  # Requires: R2 bucket + API token with Object Read & Write on the bucket.
+  # Create the token at: Cloudflare dashboard > R2 > Manage R2 API Tokens
+  # The endpoint URL uses your Cloudflare account ID (visible in the R2 dashboard URL).
+  # Create the credentials secret via SOPS — see docs/secrets-reference.md
+  #
   # backup:
   #   barmanObjectStore:
-  #     destinationPath: s3://your-bucket/cnpg/myapp-db
+  #     destinationPath: s3://guava-kube-backups/cnpg/myapp-db
   #     endpointURL: https://<account-id>.r2.cloudflarestorage.com
   #     s3Credentials:
   #       accessKeyId:
@@ -80,17 +85,19 @@ spec:
   #       secretAccessKey:
   #         name: r2-credentials
   #         key: secret-access-key
-  #   retentionPolicy: "7d"
+  #   retentionPolicy: "30d"
 
-  # # Optional: Scheduled backups
-  # # Requires backup configuration above
+  # Optional: Scheduled base backups (requires backup config above)
+  # WAL archiving is automatic once backup is configured — this just
+  # controls how often a full base backup is taken.
   # ---
   # apiVersion: postgresql.cnpg.io/v1
   # kind: ScheduledBackup
   # metadata:
-  #   name: myapp-db-daily
+  #   name: myapp-db-weekly
+  #   namespace: myapp
   # spec:
-  #   schedule: "0 2 * * *"  # 2 AM daily
+  #   schedule: "0 2 * * 0"  # Sunday 2 AM
   #   backupOwnerReference: self
   #   cluster:
   #     name: myapp-db
