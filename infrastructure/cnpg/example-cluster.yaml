@@ -97,7 +97,7 @@ spec:
   #   name: myapp-db-weekly
   #   namespace: myapp
   # spec:
-  #   schedule: "0 2 * * 0"  # Sunday 2 AM
+  #   schedule: "0 2 * * 7"  # Sunday 2 AM
   #   backupOwnerReference: self
   #   cluster:
   #     name: myapp-db
