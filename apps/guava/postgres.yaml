@@ -42,6 +42,10 @@ spec:
     barmanObjectStore:
       destinationPath: s3://guava-kube-backups/cnpg/guava-db
       endpointURL: https://afc0de0b67de79f311811d5c36e790bd.r2.cloudflarestorage.com
+      wal:
+        compression: gzip
+      data:
+        compression: gzip
       s3Credentials:
         accessKeyId:
           name: r2-credentials
