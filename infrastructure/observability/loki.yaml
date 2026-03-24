@@ -24,7 +24,7 @@ spec:
           commonConfig:
             replication_factor: 1
           limits_config:
-            retention_period: 360h  # 15 days
+            retention_period: 1440h  # 60 days
           compactor:
             retention_enabled: true
             working_directory: /var/loki/compactor

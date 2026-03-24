@@ -25,7 +25,7 @@ spec:
                 path: /var/tempo/traces
               wal:
                 path: /var/tempo/wal
-          retention: 360h  # 15 days
+          retention: 1440h  # 60 days
           reportingEnabled: false
           metricsGenerator:
             enabled: false
