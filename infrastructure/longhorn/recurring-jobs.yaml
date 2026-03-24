@@ -5,7 +5,7 @@ metadata:
   namespace: longhorn-system
 spec:
   concurrency: 1
-  cron: "0 2 * * *"
+  cron: "52 17 * * *"
   task: snapshot-cleanup
   retain: 0
   groups:
@@ -18,7 +18,7 @@ metadata:
   namespace: longhorn-system
 spec:
   concurrency: 1
-  cron: "0 3 * * *"
+  cron: "53 17 * * *"
   task: filesystem-trim
   groups:
     - default
