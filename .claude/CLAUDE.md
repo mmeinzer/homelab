@@ -107,4 +107,3 @@ See `.claude/rules/` for context-specific guidance:
 - `/check-sync <app>` - Check ArgoCD sync status
 - `/debug-pod <ns> <pod>` - Debug pod with logs and events
 - `/list-apps` - List all ArgoCD applications
-- `/query-metrics [term]` - Query Prometheus for available metrics
