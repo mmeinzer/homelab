@@ -37,6 +37,7 @@ spec:
 
           # Retention
           retention: 15d
+          retentionSize: 28GB
 
           # Resources
           resources:
