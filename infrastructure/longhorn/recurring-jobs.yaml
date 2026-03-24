@@ -1,0 +1,24 @@
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: snapshot-cleanup
+  namespace: longhorn-system
+spec:
+  concurrency: 1
+  cron: "0 2 * * *"
+  task: snapshot-cleanup
+  retain: 0
+  groups:
+    - default
+---
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: filesystem-trim
+  namespace: longhorn-system
+spec:
+  concurrency: 1
+  cron: "0 3 * * *"
+  task: filesystem-trim
+  groups:
+    - default
