@@ -88,6 +88,13 @@ kubectl logs -n <namespace> -l app.kubernetes.io/name=<app>
 kubectl annotate application <app> -n argocd argocd.argoproj.io/refresh=hard --overwrite
 ```
 
+## Querying Observability Data
+
+Use `kubectl run --rm -i --restart=Never --image=curlimages/curl` to query in-cluster APIs directly (no auth needed):
+- Prometheus: `http://prometheus.observability:80/api/v1/query?query=...`
+- Loki: `http://loki.observability:3100/loki/api/v1/query_range?query=...`
+- Tempo: `http://tempo.observability:3200/api/search?q=...`
+
 ## Datasource UIDs
 
 When referencing datasources in Grafana dashboards:
