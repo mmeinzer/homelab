@@ -36,7 +36,7 @@ spec:
             storageClass: longhorn
 
           # Retention
-          retention: 7d
+          retention: 15d
           retentionSize: 28GB
 
           # Resources
