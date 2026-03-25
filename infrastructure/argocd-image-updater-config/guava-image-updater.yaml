@@ -7,10 +7,10 @@ spec:
   namespace: argocd
   commonUpdateSettings:
     updateStrategy: newest-build
-    allowTags: "regexp:^.*$"
+    allowTags: "regexp:^[0-9a-f]{7,40}$"
     pullSecret: pullsecret:argocd/ghcr-pullsecret
   writeBackConfig:
-    method: argocd
+    method: "git:secret:argocd/argocd-image-updater-git-creds"
   applicationRefs:
     - namePattern: "guava"
       images:
