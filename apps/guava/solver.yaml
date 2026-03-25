@@ -33,21 +33,29 @@ spec:
               memory: "64Mi"
             limits:
               memory: "256Mi"
+          ports:
+            - name: health
+              containerPort: 8081
+              protocol: TCP
           startupProbe:
-            exec:
-              command: ["true"]
+            httpGet:
+              path: /healthz
+              port: health
             initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: health
+            periodSeconds: 15
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: health
             periodSeconds: 10
             failureThreshold: 3
-          livenessProbe:
-            exec:
-              command: ["true"]
-            periodSeconds: 30
-          readinessProbe:
-            exec:
-              command: ["true"]
-            initialDelaySeconds: 5
-            periodSeconds: 10
           env:
             - name: DATABASE_URL
               valueFrom:
