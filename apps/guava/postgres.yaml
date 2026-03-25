@@ -26,16 +26,16 @@ spec:
 
   resources:
     requests:
-      cpu: 100m
-      memory: 256Mi
+      cpu: 500m
+      memory: 1Gi
     limits:
-      memory: 512Mi
+      memory: 2Gi
 
   postgresql:
     parameters:
-      shared_buffers: "128MB"
-      effective_cache_size: "256MB"
-      work_mem: "8MB"
+      shared_buffers: "512MB"
+      effective_cache_size: "1GB"
+      work_mem: "16MB"
       archive_timeout: "300"
 
   backup:
