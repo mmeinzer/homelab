@@ -68,7 +68,7 @@ spec:
             - name: SMTP_FROM
               value: "Guava <noreply@mail.guavasuite.com>"
             - name: FRONTEND_BASE_URL
-              value: "https://guavasuite.com"
+              value: "https://app.guavasuite.com"
           livenessProbe:
             httpGet:
               path: /health
