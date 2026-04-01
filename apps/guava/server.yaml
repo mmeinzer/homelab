@@ -69,6 +69,21 @@ spec:
               value: "Guava <noreply@mail.guavasuite.com>"
             - name: FRONTEND_BASE_URL
               value: "https://app.guavasuite.com"
+            # R2 file uploads
+            - name: R2_ACCOUNT_ID
+              value: "afc0de0b67de79f311811d5c36e790bd"
+            - name: R2_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: r2-uploads-credentials
+                  key: access-key-id
+            - name: R2_ACCESS_KEY_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: r2-uploads-credentials
+                  key: secret-access-key
+            - name: R2_BUCKET_NAME
+              value: "guava-files"
           livenessProbe:
             httpGet:
               path: /health
