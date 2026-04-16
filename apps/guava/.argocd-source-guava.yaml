@@ -1,4 +1,4 @@
 kustomize:
   images:
   - ghcr.io/mmeinzer/guava:2a9997d
-  - ghcr.io/mmeinzer/guava-solver:2a9997d
+  - ghcr.io/mmeinzer/guava-solver:d41cca5
