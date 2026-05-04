@@ -9,7 +9,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/argoproj-labs/argocd-image-updater
-    targetRevision: v1.1.1
+    targetRevision: v1.2.0
     path: config/default
   destination:
     server: https://kubernetes.default.svc
