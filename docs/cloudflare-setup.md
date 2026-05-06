@@ -31,7 +31,7 @@ Tunnels allow external access without opening inbound ports on the router.
 2. Navigate to **Networks** > **Tunnels**
 3. Click **Create a tunnel**
 4. Choose **Cloudflared** connector type
-5. Name your tunnel (e.g., `homelab-guava`)
+5. Name your tunnel for the application it will expose
 6. Click **Save tunnel**
 
 ### Getting Tunnel Credentials

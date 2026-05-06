@@ -45,7 +45,7 @@ openssl rand -base64 64
 docker run --rm authelia/authelia:latest authelia crypto hash generate argon2 --password 'your-password'
 ```
 
-### GHCR pull secret (ArgoCD Image Updater + Guava)
+### GHCR pull secret (ArgoCD Image Updater)
 
 Create a GitHub Personal Access Token (classic) with `read:packages` scope at https://github.com/settings/tokens, then format as a `kubernetes.io/dockerconfigjson` secret:
 

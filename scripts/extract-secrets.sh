@@ -15,8 +15,6 @@ SECRETS=(
   "argocd/argocd-secret"
   "authelia/authelia-secrets"
   "argocd/ghcr-pullsecret"
-  "guava/ghcr-creds"
-  "guava/cloudflared-credentials"
 )
 
 for secret in "${SECRETS[@]}"; do
