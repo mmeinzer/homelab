@@ -38,8 +38,6 @@ encode_secret "external-dns-cloudflare-api-token.yaml" "infrastructure/external-
 encode_secret "argocd-argocd-secret.yaml" "infrastructure/argocd-secrets/argocd-secret.sops.yaml"
 encode_secret "authelia-authelia-secrets.yaml" "infrastructure/authelia/secrets.sops.yaml"
 encode_secret "argocd-ghcr-pullsecret.yaml" "infrastructure/argocd-image-updater-config/ghcr-pullsecret.sops.yaml"
-encode_secret "guava-ghcr-creds.yaml" "apps/guava/ghcr-creds.sops.yaml"
-encode_secret "guava-cloudflared-credentials.yaml" "apps/guava/cloudflared-credentials.sops.yaml"
 
 echo ""
 echo "Encoding complete. SOPS-encrypted secrets created."
